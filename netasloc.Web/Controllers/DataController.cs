@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.DTO;
@@ -56,6 +57,18 @@ namespace netasloc.Web.Controllers
                 totalEmptyLines = totalEmptyLines.ToArray(),
                 date = date.ToString()
             });
+        }
+
+        [HttpGet("GetListOfReleases")]
+        public JsonResult GetListOfReleases()
+        {
+            _logger.LogInformation("DataController::GetListOfReleases::called.");
+
+            IEnumerable<ReleaseDTO> response = _dataAccess.GetAllReleases();
+
+            _logger.LogInformation("DataController::GetListOfReleases::finished.");
+
+            return Json(response.ToArray());
         }
 
     }

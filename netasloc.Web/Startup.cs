@@ -29,7 +29,9 @@ namespace netasloc.Web
             services.AddTransient<MySqlDatabase>(_ => new MySqlDatabase(Configuration.GetConnectionString("DEV")));
 
             services.AddScoped<_IMapper<Directory, DirectoryDTO>, DirectoryMapper>();
-            services.AddScoped<_IOperationsDAO<Directory>, DirectoryDAO>();
+            services.AddScoped<_IDirectoryDAO, DirectoryDAO>();
+            services.AddScoped<_IMapper<Release, ReleaseDTO>, ReleaseMapper>();
+            services.AddScoped<_IReleaseDAO, ReleaseDAO>();
 
             services.AddScoped<_ILOCService, LOCService>();
             services.AddScoped<_IDataAccessService, DataAccessService>();

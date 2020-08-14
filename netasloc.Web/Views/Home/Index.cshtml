@@ -2,17 +2,23 @@
     ViewData["Title"] = "Home Page";
 }
 
+<div>
+    <p>Table</p>
+    <div class="table-container" id="releases-table-container"></div>
+</div>
 
 <div class="chart-container" style="position: relative; height:30vh; width:80vw">
-    <canvas id="TotalLOC"></canvas>
+    <canvas id="LastAnalyzedDirectories"></canvas>
 </div>
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" integrity="sha512-QEiC894KVkN9Tsoi6+mKf8HaCLJvyA6QIRzY5KrfINXYuP9NxdIkRQhGq3BZi0J4I7V5SidGM3XUQ5wFiMDuWg==" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
-    var ctx = document.getElementById('TotalLOC').getContext('2d');
-    function drawGraph(projectNames, fileCounts, totalLines, totalCodeLines, totalCommentLines, totalEmptyLines, date) {
+    var ctx = document.getElementById('LastAnalyzedDirectories').getContext('2d');
+    function drawLastAnalyzedDirectoriesGraph(projectNames, fileCounts, totalLines, totalCodeLines, totalCommentLines, totalEmptyLines, date) {
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -139,13 +145,47 @@
         });
     }
 
-    function getData() {
+    function getLastAnalyzedDirectories() {
         var url = '@Url.Action("GetLastAnalyzedDirectories", "Data")';
         $.get(url, function (data) {
-            console.log(data);
-            drawGraph(data.projectNames, data.fileCounts, data.totalLines, data.totalCodeLines, data.totalCommentLines, data.totalEmptyLines, data.date);
+            drawLastAnalyzedDirectoriesGraph(data.projectNames, data.fileCounts, data.totalLines, data.totalCodeLines, data.totalCommentLines, data.totalEmptyLines, data.date);
         });
     }
 
-    getData();
+    getLastAnalyzedDirectories();
+</script>
+
+<script>
+    function createReleasesTable(data) {
+        var table = document.createElement("table");
+        table.className = "table table-striped";
+
+        if (data.length > 0) {
+            var headers = table.insertRow();
+            $.each(Object.keys(data[0]), function () {
+                var header = headers.insertCell();
+                header.appendChild(document.createTextNode(this));
+            });
+            for (var i = 0; i < data.length; ++i) {
+                var tr = table.insertRow();
+                for (key in data[i]) {
+                    var td = tr.insertCell();
+                    td.appendChild(document.createTextNode(data[i][key]));
+                }
+            }
+        }
+
+        
+
+        $("#releases-table-container")[0].appendChild(table);
+    }
+
+    function getListOfReleases() {
+        var url = '@Url.Action("GetListOfReleases", "Data")';
+        $.get(url, function (data) {
+            createReleasesTable(data);
+        });
+    }
+
+    getListOfReleases();
 </script>

@@ -59,7 +59,7 @@ namespace netasloc.Core.Services
                     string[] tempPath = dirResult.DirectoryFullPath.Split("\\");
                     string projectName = tempPath[tempPath.Length - 1];
 
-                    _dataAccess.Create(new DTO.DirectoryDTO()
+                    _dataAccess.CreateDirectory(new DTO.DirectoryDTO()
                     {
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
@@ -73,6 +73,17 @@ namespace netasloc.Core.Services
                     });
                 }
             }
+
+            _dataAccess.CreateRelease(new DTO.ReleaseDTO()
+            {
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                ReleaseCode = GetReleaseCode(),
+                TotalLineCount = response.TotalLineCount,
+                CodeLineCount = response.CodeLineCount,
+                CommentLineCount = response.CommentLineCount,
+                EmptyLineCount = response.EmptyLineCount
+            });
 
             return response;
         }
@@ -286,6 +297,11 @@ namespace netasloc.Core.Services
                         else
                             return null;
             return null;
+        }
+
+        private string GetReleaseCode()
+        {
+            return "R_" + DateTime.Now.Year.ToString() + "_" + DateTime.Now.Month.ToString() + "_" + DateTime.Now.Day.ToString();
         }
     }
 }

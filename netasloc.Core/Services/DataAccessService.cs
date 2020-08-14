@@ -8,20 +8,25 @@ namespace netasloc.Core.Services
 {
     public class DataAccessService : _IDataAccessService
     {
-        private readonly _IOperationsDAO<Directory> _directories;
+        private readonly _IDirectoryDAO _directories;
+        private readonly _IReleaseDAO _releases;
         private readonly _IMapper<Directory, DirectoryDTO> _directoryMapper;
-        public DataAccessService(_IOperationsDAO<Directory> directories, _IMapper<Directory, DirectoryDTO> directoryMapper)
+        private readonly _IMapper<Release, ReleaseDTO> _releaseMapper;
+        public DataAccessService(_IDirectoryDAO directories, _IMapper<Directory, DirectoryDTO> directoryMapper,
+                                 _IReleaseDAO releases, _IMapper<Release, ReleaseDTO> releaseMapper)
         {
             _directories = directories;
             _directoryMapper = directoryMapper;
+            _releases = releases;
+            _releaseMapper = releaseMapper;
         }
 
-        public DirectoryDTO GetByID(uint id)
+        public DirectoryDTO GetDirectoryByID(uint id)
         {
             return _directoryMapper.DataToCore(_directories.GetByID(id));
         }
 
-        public IEnumerable<DirectoryDTO> GetAll()
+        public IEnumerable<DirectoryDTO> GetAllDirectories()
         {
             var result = _directories.GetAll();
 
@@ -34,17 +39,17 @@ namespace netasloc.Core.Services
             return response;
         }
 
-        public bool Create(DirectoryDTO item)
+        public bool CreateDirectory(DirectoryDTO item)
         {
             return _directories.Create(_directoryMapper.CoreToData(item));
         }
 
-        public bool Update(uint id, DirectoryDTO item)
+        public bool UpdateDirectory(uint id, DirectoryDTO item)
         {
             return _directories.Update(id, _directoryMapper.CoreToData(item));
         }
 
-        public bool Delete(uint id)
+        public bool DeleteDirectory(uint id)
         {
             return _directories.Delete(id);
         }
@@ -60,6 +65,39 @@ namespace netasloc.Core.Services
             }
 
             return response;
+        }
+
+        public ReleaseDTO GetReleaseByID(uint id)
+        {
+            return _releaseMapper.DataToCore(_releases.GetByID(id));
+        }
+
+        public IEnumerable<ReleaseDTO> GetAllReleases()
+        {
+            var result = _releases.GetAll();
+
+            List<ReleaseDTO> response = new List<ReleaseDTO>();
+            foreach (var item in result)
+            {
+                response.Add(_releaseMapper.DataToCore(item));
+            }
+
+            return response;
+        }
+
+        public bool CreateRelease(ReleaseDTO item)
+        {
+            return _releases.Create(_releaseMapper.CoreToData(item));
+        }
+
+        public bool UpdateRelease(uint id, ReleaseDTO item)
+        {
+            return _releases.Update(id, _releaseMapper.CoreToData(item));
+        }
+
+        public bool DeleteRelease(uint id)
+        {
+            return _releases.Delete(id);
         }
     }
 }

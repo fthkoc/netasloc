@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace netasloc.Data.DAO
 {
-    public class DirectoryDAO : _IOperationsDAO<Directory>
+    public class DirectoryDAO : _IDirectoryDAO
     {
         private readonly MySqlDatabase _database;
 
