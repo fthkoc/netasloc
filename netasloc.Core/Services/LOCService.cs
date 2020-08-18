@@ -146,7 +146,7 @@ namespace netasloc.Core.Services
                     else
                     {
                         // Add new entry for the current file extension
-                        response.AllTypesData.Add(fileExtension, new LOCDataForFileExtension()
+                        response.AllTypesData.Add(fileExtension, new LOCForFileExtension()
                         {
                             FileExtension = fileExtension,
                             CodeLineCount = currentFileResponse.CodeLineCount,

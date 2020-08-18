@@ -26,7 +26,7 @@ namespace netasloc.Web.Controllers
             var model = new IndexViewModel();
             try
             {
-                model.Releases = _dataAccess.GetAllReleases();
+                model.Releases = _dataAccess.GetAllReleases().Reverse();
 
                 var directories = _dataAccess.GetLastAnalyzedDirectories();
                 model.Directories.projectNames = JsonSerializer.Serialize(directories.Select(x => x.ProjectName));

@@ -3,36 +3,58 @@
 }
 @model IndexViewModel
 
-<div class="table-container" id="releases-table-container">
-    <table class="table table-inverse table-hover">
-        <thead class="thead-dark">
+<div class="table-container table-responsive" id="releases-table-container">
+    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+        <tbody>
             <tr>
                 <th>Release Code</th>
-                <th>Created At</th>
-                <th>Updated At</th>
-                <th>SLOC</th>
-                <th>LOC</th>
-                <th>Comment</th>
-                <th>Empty</th>
-                <th>SLOC Difference</th>
-                <th>LOC Difference</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Releases)
-            {
-                <tr>
+                @foreach (var item in Model.Releases)
+                {
                     <td>@item.ReleaseCode</td>
-                    <td>@item.CreatedAt</td>
-                    <td>@item.UpdatedAt</td>
-                    <td>@item.CodeLineCount</td>
+                }
+            </tr>
+            <tr>
+                <th>LOC</th>
+                @foreach (var item in Model.Releases)
+                {
                     <td>@item.TotalLineCount</td>
+                }
+            </tr>
+            <tr>
+                <th>Comment</th>
+                @foreach (var item in Model.Releases)
+                {
                     <td>@item.CommentLineCount</td>
+                }
+            </tr>
+            <tr>
+                <th>Empty</th>
+                @foreach (var item in Model.Releases)
+                {
                     <td>@item.EmptyLineCount</td>
-                    <td>@item.DifferenceSLOC</td>
+                }
+            </tr>
+            <tr>
+                <th>SLOC</th>
+                @foreach (var item in Model.Releases)
+                {
+                    <td>@item.CodeLineCount</td>
+                }
+            </tr>
+            <tr>
+                <th>LOC Difference</th>
+                @foreach (var item in Model.Releases)
+                {
                     <td>@item.DifferenceLOC</td>
-                </tr>
-            }
+                }
+            </tr>
+            <tr>
+                <th>SLOC Difference</th>
+                @foreach (var item in Model.Releases)
+                {
+                    <td>@item.DifferenceSLOC</td>
+                }
+            </tr>
         </tbody>
     </table>
 </div>

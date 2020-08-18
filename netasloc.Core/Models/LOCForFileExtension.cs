@@ -1,26 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace netasloc.Core.Models
 {
-    public class LOCForDirectoryResponse
+    public class LOCForFileExtension
     {
-        public LOCForDirectoryResponse()
+        public LOCForFileExtension()
         {
-            DirectoryFullPath = "";
+            FileExtension = "";
             FileCount = 0;
             TotalLineCount = 0;
             CodeLineCount = 0;
             CommentLineCount = 0;
             EmptyLineCount = 0;
-            AllTypesData = new Dictionary<string, LOCForFileExtension>();
+            AllFilesData = new List<LOCForSingleFileResponse>();
         }
 
-        public string DirectoryFullPath { get; set; }
+        public string FileExtension { get; set; }
         public uint FileCount { get; set; }
         public uint TotalLineCount { get; set; }
         public uint CodeLineCount { get; set; }
         public uint CommentLineCount { get; set; }
         public uint EmptyLineCount { get; set; }
-        public IDictionary<string, LOCForFileExtension> AllTypesData { get; set; }
+        public IList<LOCForSingleFileResponse> AllFilesData { get; set; }
     }
 }
