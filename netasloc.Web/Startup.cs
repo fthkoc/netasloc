@@ -33,8 +33,8 @@ namespace netasloc.Web
             services.AddScoped<_IMapper<Release, ReleaseDTO>, ReleaseMapper>();
             services.AddScoped<_IReleaseDAO, ReleaseDAO>();
 
-            services.AddScoped<_ILOCService, LOCService>();
-            services.AddScoped<_IDataAccessService, DataAccessService>();
+            services.AddTransient<_IDataAccessService, DataAccessService>();
+            services.AddTransient<_ILOCService, LOCService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,7 +16,9 @@ namespace netasloc.Core.Mapping
                 TotalLineCount = item.total_line_count,
                 CodeLineCount = item.code_line_count,
                 CommentLineCount = item.comment_line_count,
-                EmptyLineCount = item.empty_line_count
+                EmptyLineCount = item.empty_line_count,
+                DifferenceSLOC = item.difference_sloc,
+                DifferenceLOC = item.difference_loc
             };
         }
 
@@ -31,7 +33,9 @@ namespace netasloc.Core.Mapping
                 total_line_count = item.TotalLineCount,
                 code_line_count = item.CodeLineCount,
                 comment_line_count = item.CommentLineCount,
-                empty_line_count = item.EmptyLineCount
+                empty_line_count = item.EmptyLineCount,
+                difference_sloc = item.DifferenceSLOC,
+                difference_loc = item.DifferenceLOC
             };
         }
     }

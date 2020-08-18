@@ -33,7 +33,9 @@ namespace netasloc.Data.DAO
                         total_line_count = reader.GetFieldValue<uint>(4),
                         code_line_count = reader.GetFieldValue<uint>(5),
                         comment_line_count = reader.GetFieldValue<uint>(6),
-                        empty_line_count = reader.GetFieldValue<uint>(7)
+                        empty_line_count = reader.GetFieldValue<uint>(7),
+                        difference_sloc = reader.GetFieldValue<int>(8),
+                        difference_loc = reader.GetFieldValue<int>(9)
                     });
                 }
             }
@@ -61,7 +63,9 @@ namespace netasloc.Data.DAO
                         total_line_count = reader.GetFieldValue<uint>(4),
                         code_line_count = reader.GetFieldValue<uint>(5),
                         comment_line_count = reader.GetFieldValue<uint>(6),
-                        empty_line_count = reader.GetFieldValue<uint>(7)
+                        empty_line_count = reader.GetFieldValue<uint>(7),
+                        difference_sloc = reader.GetFieldValue<int>(8),
+                        difference_loc = reader.GetFieldValue<int>(9)
                     });
                 }
             }
@@ -71,7 +75,7 @@ namespace netasloc.Data.DAO
         public bool Create(Release item)
         {
             MySqlCommand command = this._database.Connection.CreateCommand();
-            command.CommandText = "INSERT INTO `releases` (`created_at`, `updated_at`, `release_code`, `total_line_count`, `code_line_count`, `comment_line_count`, `empty_line_count`) VALUES (@created_at, @updated_at, @release_code, @total_line_count, @code_line_count, @comment_line_count, @empty_line_count)";
+            command.CommandText = "INSERT INTO `releases` (`created_at`, `updated_at`, `release_code`, `total_line_count`, `code_line_count`, `comment_line_count`, `empty_line_count`, `difference_sloc`, `difference_loc`) VALUES (@created_at, @updated_at, @release_code, @total_line_count, @code_line_count, @comment_line_count, @empty_line_count, @difference_sloc, @difference_loc)";
             command.Parameters.AddWithValue("@created_at", item.created_at);
             command.Parameters.AddWithValue("@updated_at", item.updated_at);
             command.Parameters.AddWithValue("@release_code", item.release_code);
@@ -79,6 +83,8 @@ namespace netasloc.Data.DAO
             command.Parameters.AddWithValue("@code_line_count", item.code_line_count);
             command.Parameters.AddWithValue("@comment_line_count", item.comment_line_count);
             command.Parameters.AddWithValue("@empty_line_count", item.empty_line_count);
+            command.Parameters.AddWithValue("@difference_sloc", item.difference_sloc);
+            command.Parameters.AddWithValue("@difference_loc", item.difference_loc);
             int queryResult = command.ExecuteNonQuery();
             if (queryResult == 1)
                 return true;
@@ -89,7 +95,7 @@ namespace netasloc.Data.DAO
         public bool Update(uint id, Release item)
         {
             MySqlCommand command = this._database.Connection.CreateCommand();
-            command.CommandText = "UPDATE `releases` SET created_at = @created_at, updated_at = @updated_at, release_code = @release_code, total_line_count = @total_line_count, code_line_count = @code_line_count, comment_line_count = @comment_line_count, empty_line_count = @empty_line_count WHERE id = @id";
+            command.CommandText = "UPDATE `releases` SET created_at = @created_at, updated_at = @updated_at, release_code = @release_code, total_line_count = @total_line_count, code_line_count = @code_line_count, comment_line_count = @comment_line_count, empty_line_count = @empty_line_count, difference_sloc = @difference_sloc, difference_loc = @difference_loc WHERE id = @id";
             command.Parameters.AddWithValue("@id", id);
             command.Parameters.AddWithValue("@created_at", item.created_at);
             command.Parameters.AddWithValue("@updated_at", item.updated_at);
@@ -98,6 +104,8 @@ namespace netasloc.Data.DAO
             command.Parameters.AddWithValue("@code_line_count", item.code_line_count);
             command.Parameters.AddWithValue("@comment_line_count", item.comment_line_count);
             command.Parameters.AddWithValue("@empty_line_count", item.empty_line_count);
+            command.Parameters.AddWithValue("@difference_sloc", item.difference_sloc);
+            command.Parameters.AddWithValue("@difference_loc", item.difference_loc);
             int queryResult = command.ExecuteNonQuery();
             if (queryResult == 1)
                 return true;

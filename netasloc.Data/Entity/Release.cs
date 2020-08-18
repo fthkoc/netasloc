@@ -15,5 +15,7 @@ namespace netasloc.Data.Entity
         public uint code_line_count { get; set; }
         public uint comment_line_count { get; set; }
         public uint empty_line_count { get; set; }
+        public int difference_sloc { get; set; }
+        public int difference_loc { get; set; }
     }
 }

@@ -41,6 +41,8 @@ namespace netasloc.Web.Controllers
                 CodeLineCount = result.CodeLineCount,
                 CommentLineCount = result.CommentLineCount,
                 EmptyLineCount = result.EmptyLineCount,
+                DifferenceSLOC = result.DifferenceSLOC,
+                DifferenceLOC = result.DifferenceLOC,
                 AllDirectoriesData = result.AllDirectoriesData
             };
         }

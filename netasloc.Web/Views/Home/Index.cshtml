@@ -1,23 +1,69 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model IndexViewModel
 
-<div>
-    <p>Table</p>
-    <div class="table-container" id="releases-table-container"></div>
+<div class="table-container" id="releases-table-container">
+    <table class="table table-inverse table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Release Code</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>SLOC</th>
+                <th>LOC</th>
+                <th>Comment</th>
+                <th>Empty</th>
+                <th>SLOC Difference</th>
+                <th>LOC Difference</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Releases)
+            {
+                <tr>
+                    <td>@item.ReleaseCode</td>
+                    <td>@item.CreatedAt</td>
+                    <td>@item.UpdatedAt</td>
+                    <td>@item.CodeLineCount</td>
+                    <td>@item.TotalLineCount</td>
+                    <td>@item.CommentLineCount</td>
+                    <td>@item.EmptyLineCount</td>
+                    <td>@item.DifferenceSLOC</td>
+                    <td>@item.DifferenceLOC</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 <div class="chart-container" style="position: relative; height:30vh; width:80vw">
     <canvas id="LastAnalyzedDirectories"></canvas>
 </div>
 
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" integrity="sha512-QEiC894KVkN9Tsoi6+mKf8HaCLJvyA6QIRzY5KrfINXYuP9NxdIkRQhGq3BZi0J4I7V5SidGM3XUQ5wFiMDuWg==" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
     var ctx = document.getElementById('LastAnalyzedDirectories').getContext('2d');
+
+    var backgroundColorList = [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+    ];
+
+    var borderColorList = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+    ];
+
     function drawLastAnalyzedDirectoriesGraph(projectNames, fileCounts, totalLines, totalCodeLines, totalCommentLines, totalEmptyLines, date) {
         new Chart(ctx, {
             type: 'bar',
@@ -26,113 +72,43 @@
                 datasets: [{
                     label: 'File Count',
                     data: fileCounts,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
                     borderWidth: 1
                 },
                 {
-                    label: 'Total Line Count',
+                    label: 'Lines Of Code',
                     data: totalLines,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
                     borderWidth: 1
                 },
                 {
-                    label: 'Code Line Count',
+                    label: 'Source\'s Lines Of Code',
                     data: totalCodeLines,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
                     borderWidth: 1
                 },
                 {
                     label: 'Comment Line Count',
                     data: totalCommentLines,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
                     borderWidth: 1
                 },
                 {
                     label: 'Empty Line Count',
                     data: totalEmptyLines,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
                     borderWidth: 1
                 }]
             },
             options: {
                 title: {
                     display: true,
-                    text: "Source's Lines Of Codes for tracked projects, last analyzed at " + date
+                    text: "Current status of tracked projects, last analyzed at " + date
                 },
                 scales: {
                     yAxes: [{
@@ -145,47 +121,13 @@
         });
     }
 
-    function getLastAnalyzedDirectories() {
-        var url = '@Url.Action("GetLastAnalyzedDirectories", "Data")';
-        $.get(url, function (data) {
-            drawLastAnalyzedDirectoriesGraph(data.projectNames, data.fileCounts, data.totalLines, data.totalCodeLines, data.totalCommentLines, data.totalEmptyLines, data.date);
-        });
-    }
-
-    getLastAnalyzedDirectories();
-</script>
-
-<script>
-    function createReleasesTable(data) {
-        var table = document.createElement("table");
-        table.className = "table table-striped";
-
-        if (data.length > 0) {
-            var headers = table.insertRow();
-            $.each(Object.keys(data[0]), function () {
-                var header = headers.insertCell();
-                header.appendChild(document.createTextNode(this));
-            });
-            for (var i = 0; i < data.length; ++i) {
-                var tr = table.insertRow();
-                for (key in data[i]) {
-                    var td = tr.insertCell();
-                    td.appendChild(document.createTextNode(data[i][key]));
-                }
-            }
-        }
-
-        
-
-        $("#releases-table-container")[0].appendChild(table);
-    }
-
-    function getListOfReleases() {
-        var url = '@Url.Action("GetListOfReleases", "Data")';
-        $.get(url, function (data) {
-            createReleasesTable(data);
-        });
-    }
-
-    getListOfReleases();
+    drawLastAnalyzedDirectoriesGraph(
+        @Html.Raw(Model.Directories.projectNames),
+        @Html.Raw(Model.Directories.fileCounts),
+        @Html.Raw(Model.Directories.totalLines),
+        @Html.Raw(Model.Directories.totalCodeLines),
+        @Html.Raw(Model.Directories.totalCommentLines),
+        @Html.Raw(Model.Directories.totalEmptyLines),
+        @Html.Raw(Model.Directories.date)
+    );
 </script>

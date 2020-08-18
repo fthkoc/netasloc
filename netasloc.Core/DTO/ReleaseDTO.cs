@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace netasloc.Core.DTO
 {
@@ -14,5 +12,7 @@ namespace netasloc.Core.DTO
         public uint CodeLineCount { get; set; }
         public uint CommentLineCount { get; set; }
         public uint EmptyLineCount { get; set; }
+        public int DifferenceSLOC { get; set; }
+        public int DifferenceLOC { get; set; }
     }
 }
