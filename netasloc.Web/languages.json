@@ -2,6 +2,51 @@
   "languages": [
     {
       "Aliases": [
+        "C",
+        "c"
+      ],
+      "FileExtensions": [
+        ".c",
+        ".h",
+        ".i"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "C++",
+        "Cpp",
+        "cpp"
+      ],
+      "FileExtensions": [
+        ".cpp",
+        ".cc",
+        ".cxx",
+        ".c++",
+        ".hpp",
+        ".hh",
+        ".hxx",
+        ".ii",
+        ".ino",
+        ".inl",
+        ".ipp",
+        ".hpp.in",
+        ".h.in"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
         "C#",
         "c#",
         "csharp"
@@ -15,10 +60,333 @@
         "//"
       ],
       "BlockCommentCharacters": [
-        [
-          "/*",
-          "*/"
-        ]
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "CSS",
+        "css"
+      ],
+      "FileExtensions": [
+        ".css"
+      ],
+      "LineCommentCharacters": [],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "Docker",
+        "Dockerfile",
+        "Containerfile"
+      ],
+      "FileExtensions": [
+        ".dockerfile",
+        ".containerfile"
+      ],
+      "LineCommentCharacters": [
+        "#"
+      ],
+      "BlockCommentCharacters": []
+    },
+    {
+      "Aliases": [
+        "Git",
+        "git"
+      ],
+      "FileExtensions": [
+        ".gitignore_global",
+        ".gitignore",
+        ".npmignore",
+        ".patch",
+        ".diff",
+        ".rej",
+        ".properties",
+        ".cfg",
+        ".conf",
+        ".directory",
+        ".gitattributes",
+        ".gitconfig",
+        ".gitmodules",
+        ".editorconfig",
+        ".npmrc"
+      ],
+      "LineCommentCharacters": [
+        "#"
+      ],
+      "BlockCommentCharacters": []
+    },
+    {
+      "Aliases": [
+        "HTML",
+        "htm",
+        "html",
+        "xhtml"
+      ],
+      "FileExtensions": [
+        ".html",
+        ".htm",
+        ".shtml",
+        ".xhtml",
+        ".mdoc",
+        ".jsp",
+        ".asp",
+        ".aspx",
+        ".jshtm",
+        ".volt",
+        ".ejs",
+        ".rhtml",
+        ".cshtml"
+      ],
+      "LineCommentCharacters": [],
+      "BlockCommentCharacters": [
+        [ "<!--", "-->" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "ini"
+      ],
+      "FileExtensions": [
+        ".ini"
+      ],
+      "LineCommentCharacters": [
+        ";"
+      ],
+      "BlockCommentCharacters": []
+    },
+    {
+      "Aliases": [
+        "Java",
+        "java"
+      ],
+      "FileExtensions": [
+        ".java",
+        ".jav"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "JavaScript",
+        "javascript",
+        "js"
+      ],
+      "FileExtensions": [
+        ".js",
+        ".es6",
+        ".mjs",
+        ".cjs",
+        ".pac",
+        ".jsx"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "JSON",
+        "json"
+      ],
+      "FileExtensions": [
+        ".json",
+        ".bowerrc",
+        ".jscsrc",
+        ".webmanifest",
+        ".js.map",
+        ".css.map",
+        ".ts.map",
+        ".har",
+        ".jslintrc",
+        ".jsonld",
+        ".jsonc",
+        ".code-workspace",
+        ".code-snippets",
+        ".hintrc",
+        ".babelrc",
+        ".eslintrc",
+        ".eslintrc.json",
+        ".jsfmtrc",
+        ".jshintrc",
+        ".swcrc"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "LESS",
+        "less"
+      ],
+      "FileExtensions": [
+        ".less"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "Makefile",
+        "makefile"
+      ],
+      "FileExtensions": [
+        ".mk"
+      ],
+      "LineCommentCharacters": [
+        "#"
+      ],
+      "BlockCommentCharacters": []
+    },
+    {
+      "Aliases": [
+        "Markdown",
+        "markdown"
+      ],
+      "FileExtensions": [
+        ".md",
+        ".mkd",
+        ".mdwn",
+        ".mdown",
+        ".markdown",
+        ".markdn",
+        ".mdtxt",
+        ".mdtext",
+        ".workbook"
+      ],
+      "LineCommentCharacters": [],
+      "BlockCommentCharacters": [
+        [ "<!--", "-->" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "PHP",
+        "php"
+      ],
+      "FileExtensions": [
+        ".php",
+        ".php4",
+        ".php5",
+        ".phtml",
+        ".ctp"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "Python",
+        "py"
+      ],
+      "FileExtensions": [
+        ".py",
+        ".rpy",
+        ".pyw",
+        ".cpy",
+        ".gyp",
+        ".gypi",
+        ".pyi",
+        ".ipy"
+      ],
+      "LineCommentCharacters": [
+        "#"
+      ],
+      "BlockCommentCharacters": [
+        [ "\"\"\"", "\"\"\"" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "SCSS",
+        "scss"
+      ],
+      "FileExtensions": [
+        ".scss"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
+      ]
+    },
+    {
+      "Aliases": [
+        "Shell Script",
+        "bash",
+        "sh",
+        "zsh",
+        "ksh",
+        "csh"
+      ],
+      "FileExtensions": [
+        ".sh",
+        ".bash",
+        ".bashrc",
+        ".bash_aliases",
+        ".bash_profile",
+        ".bash_login",
+        ".ebuild",
+        ".install",
+        ".profile",
+        ".bash_logout",
+        ".zsh",
+        ".zshrc",
+        ".zprofile",
+        ".zlogin",
+        ".zlogout",
+        ".zshenv",
+        ".zsh-theme",
+        ".ksh",
+        ".csh",
+        ".cshrc",
+        ".tcshrc",
+        ".yashrc",
+        ".yash_profile"
+      ],
+      "LineCommentCharacters": [
+        "#"
+      ],
+      "BlockCommentCharacters": []
+    },
+    {
+      "Aliases": [
+        "TypeScript",
+        "typescript",
+        "ts"
+      ],
+      "FileExtensions": [
+        ".ts",
+        ".tsx"
+      ],
+      "LineCommentCharacters": [
+        "//"
+      ],
+      "BlockCommentCharacters": [
+        [ "/*", "*/" ]
       ]
     },
     {
@@ -86,15 +454,30 @@
         ".xliff",
         ".xpdl",
         ".xul",
-        ".xoml"
+        ".xoml",
+        ".xsl",
+        ".xslt"
       ],
       "LineCommentCharacters": [],
       "BlockCommentCharacters": [
-        [
-          "<!--",
-          "-->"
-        ]
+        [ "<!--", "-->" ]
       ]
+    },
+    {
+      "Aliases": [
+        "YAML",
+        "yaml"
+      ],
+      "FileExtensions": [
+        ".yml",
+        ".eyaml",
+        ".eyml",
+        ".yaml"
+      ],
+      "LineCommentCharacters": [
+        "#"
+      ],
+      "BlockCommentCharacters": []
     }
   ]
 }

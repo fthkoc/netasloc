@@ -190,7 +190,7 @@ namespace netasloc.Core.Services
         /// <returns>LOC data of given file</returns>
         public LOCForSingleFileResponse AnalyzeLOCForSingleFile(string fileDirectory, string fileName, string fileExtension)
         {
-            _logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::called. fileName:{0}", fileName);
+            //_logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::called. fileName:{0}", fileName);
             LOCForSingleFileResponse response = new LOCForSingleFileResponse();
             try
             {
@@ -205,9 +205,9 @@ namespace netasloc.Core.Services
                     string blockCommentPattern = GetBlockCommentRegExPattern(fileExtension);
 
                     if (blockCommentPattern == null)
-                        throw new ArgumentNullException("{0} doesn't have a RegEx definition in the program.", fileExtension);
-
-                    rawData = Regex.Replace(rawData, blockCommentPattern, "");
+                        _logger.LogWarning("LOCService::AnalyzeLOCForSingleFile:: {0} is not supported.", fileExtension);
+                    else
+                        rawData = Regex.Replace(rawData, blockCommentPattern, "");
                     // Split raw data to lines and clear it from whitespaces, increment the right group count.
                     string[] lines = rawData.Split("\n");
                     for (int i = 0; i < lines.Length; i++)
@@ -234,7 +234,7 @@ namespace netasloc.Core.Services
                 _logger.LogError("LOCService::AnalyzeLOCForSingleFile::Exception::{0}", ex.Message);
                 throw;
             }
-            _logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::finished.  FileName:{0}, TotalLineCount:{1}", response.FileName, response.TotalLineCount);
+            //_logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::finished.  FileName:{0}, TotalLineCount:{1}", response.FileName, response.TotalLineCount);
             return response;
         }
 
@@ -284,21 +284,17 @@ namespace netasloc.Core.Services
         {
             string[] blockCommentCharacters = null;
             string blockCommentStart = null;
-            string blockCommentEnd = null;
 
             foreach (var language in Languages)
                 foreach (var item in language.FileExtensions)
                     if (item == extension)
-                        if (language.LineCommentCharacters.Length > 0)
+                        if (language.BlockCommentCharacters.Length > 0)
                             blockCommentCharacters = language.BlockCommentCharacters[0];
                         else
                             blockCommentCharacters = null;
 
             if (blockCommentCharacters != null)
-            {
                 blockCommentStart = blockCommentCharacters[0];
-                blockCommentEnd = blockCommentCharacters[1];
-            }
 
             switch (blockCommentStart)
             {
@@ -306,6 +302,8 @@ namespace netasloc.Core.Services
                     return "\\/\\*(\\*(?!\\/)|[^*])*\\*\\/";
                 case "<!--":
                     return "\\<\\!\\-\\-(\\*(?!\\/)|[^*]).*\\-\\-\\>";
+                case "\"\"\"":
+                    return "\"\"\"[\\s\\S]*?\"\"\"";
                 default:
                     return "";
             }
