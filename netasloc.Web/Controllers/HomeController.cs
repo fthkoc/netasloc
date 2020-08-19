@@ -26,7 +26,12 @@ namespace netasloc.Web.Controllers
             var model = new IndexViewModel();
             try
             {
-                model.Releases = _dataAccess.GetAllReleases().Reverse();
+                model.Releases.Releases = _dataAccess.GetAllReleases().Reverse();
+                model.Releases.releaseCodes = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.ReleaseCode));
+                model.Releases.totalLines = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.TotalLineCount));
+                model.Releases.totalCodeLines = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.CodeLineCount));
+                model.Releases.locDifferences = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.DifferenceLOC));
+                model.Releases.slocDifferences = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.DifferenceSLOC));
 
                 var directories = _dataAccess.GetLastAnalyzedDirectories();
                 model.Directories.projectNames = JsonSerializer.Serialize(directories.Select(x => x.ProjectName));

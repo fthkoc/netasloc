@@ -3,65 +3,100 @@
 }
 @model IndexViewModel
 
-<div class="table-container table-responsive" id="releases-table-container">
-    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
-        <tbody>
-            <tr>
-                <th>Release Code</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.ReleaseCode</td>
-                }
-            </tr>
-            <tr>
-                <th>LOC</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.TotalLineCount</td>
-                }
-            </tr>
-            <tr>
-                <th>Comment</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.CommentLineCount</td>
-                }
-            </tr>
-            <tr>
-                <th>Empty</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.EmptyLineCount</td>
-                }
-            </tr>
-            <tr>
-                <th>SLOC</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.CodeLineCount</td>
-                }
-            </tr>
-            <tr>
-                <th>LOC Difference</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.DifferenceLOC</td>
-                }
-            </tr>
-            <tr>
-                <th>SLOC Difference</th>
-                @foreach (var item in Model.Releases)
-                {
-                    <td>@item.DifferenceSLOC</td>
-                }
-            </tr>
-        </tbody>
-    </table>
+
+
+<div class="section-container">
+    <div class="row-fluid cards">
+        <div class="card-deck">
+            <div class="card mb-4 shadow card-theme">
+                <div class="card-header card-header-theme">
+                    <h5>Release Differences</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="ChartSLOC"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 shadow card-theme">
+                <div class="card-header card-header-theme">
+                    <h5>Last Analyze Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="LastAnalyzedDirectories"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid cards">
+        <div class="card shadow card-theme card-bottom" height="40vh">
+            <div class="card-header card-header-theme">
+                <h5>Release Table</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-container table-responsive" id="releases-table-container">
+                    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Release Code</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.ReleaseCode</td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>LOC</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.TotalLineCount</td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>Comment</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.CommentLineCount</td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>Empty</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.EmptyLineCount</td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>SLOC</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.CodeLineCount</td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>LOC Difference</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.DifferenceLOC</td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>SLOC Difference</th>
+                                @foreach (var item in Model.Releases.Releases)
+                                {
+                                    <td>@item.DifferenceSLOC</td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="chart-container" style="position: relative; height:30vh; width:80vw">
-    <canvas id="LastAnalyzedDirectories"></canvas>
-</div>
+
 
 <script src="~/lib/Chart.js/Chart.js"></script>
 <script>
@@ -129,7 +164,7 @@
             options: {
                 title: {
                     display: true,
-                    text: "Current status of tracked projects, last analyzed at " + date
+                    text: 'Current status of tracked projects, last analyzed at ' + date
                 },
                 scales: {
                     yAxes: [{
@@ -150,5 +185,124 @@
         @Html.Raw(Model.Directories.totalCommentLines),
         @Html.Raw(Model.Directories.totalEmptyLines),
         @Html.Raw(Model.Directories.date)
+    );
+</script>
+
+<script>
+    function drawSLOCChart(releaseCodes, totalLines, totalCodeLines, locDifference, slocDifference) {
+        var ctx = document.getElementById('ChartSLOC').getContext('2d');
+
+        var backgroundColorList = [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ];
+
+        var borderColorList = [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: releaseCodes,
+                datasets: [
+                {
+                    label: 'Lines Of Code',
+                    data: totalLines,
+                    yAxisID: 'rawData',
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Source\'s Lines Of Code',
+                    data: totalCodeLines,
+                    yAxisID: 'rawData',
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
+                    borderWidth: 1
+                },
+                {
+                    label: 'LOC Difference',
+                    data: locDifference,
+                    yAxisID: 'differences',
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
+                    borderWidth: 1,
+                    type: 'line',
+                    fill: false
+                },
+                {
+                    label: 'SLOC Difference',
+                    data: slocDifference,
+                    yAxisID: 'differences',
+                    backgroundColor: backgroundColorList,
+                    borderColor: borderColorList,
+                    borderWidth: 1,
+                    type: 'line',
+                    fill: false
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'LOC and SLOC data for releases'
+                },
+                scales: {
+                    yAxes: [
+                        {
+                            id: 'rawData',
+                            type: 'linear',
+                            position: 'left',
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Total Lines'
+                            },
+                            ticks: {
+                                beginAtZero: false
+                            }
+                        },
+                        {
+                            id: 'differences',
+                            type: 'linear',
+                            position: 'right',
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Differences'
+                            },
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }
+                    ],
+                    xAxes: [
+                        {
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }
+                    ]
+                }
+            }
+        });
+    }
+
+    drawSLOCChart(
+        @Html.Raw(Model.Releases.releaseCodes),
+        @Html.Raw(Model.Releases.totalLines),
+        @Html.Raw(Model.Releases.totalCodeLines),
+        @Html.Raw(Model.Releases.locDifferences),
+        @Html.Raw(Model.Releases.slocDifferences)
     );
 </script>

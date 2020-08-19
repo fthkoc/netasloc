@@ -11,12 +11,27 @@ namespace netasloc.Web.Models
     {
         public IndexViewModel()
         {
-            Releases = new List<ReleaseDTO>();
+            Releases = new ReleaseData();
             Directories = new DirectoryData();
         }
 
-        public IEnumerable<ReleaseDTO> Releases { get; set; }
+        public ReleaseData Releases { get; set; }
         public DirectoryData Directories { get; set; }
+    }
+
+    public class ReleaseData
+    {
+        public ReleaseData()
+        {
+            Releases = new List<ReleaseDTO>();
+        }
+
+        public IEnumerable<ReleaseDTO> Releases { get; set; }
+        public string releaseCodes { get; set; }
+        public string totalLines { get; set; }
+        public string totalCodeLines { get; set; }
+        public string slocDifferences { get; set; }
+        public string locDifferences { get; set; }
     }
 
     public class DirectoryData
