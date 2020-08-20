@@ -36,11 +36,6 @@ namespace netasloc.Core.Services
             _dataAccess = dataAccess;
         }
 
-        /// <summary>
-        /// Calculates LOC data for all given directories
-        /// </summary>
-        /// <param name="request">List of directories</param>
-        /// <returns>LOC data for all given directories</returns>
         public LOCForAllResponse AnalyzeLOCForAll(IEnumerable<string> directoryFullPaths)
         {
             _logger.LogInformation("LOCService::AnalyzeLOCForAll::called.");
@@ -76,7 +71,6 @@ namespace netasloc.Core.Services
                         });
                     }
                 }
-
                 int previousSLOC = 0;
                 int previousLOC = 0;
                 var previousReleases = _dataAccess.GetAllReleases();
@@ -85,7 +79,6 @@ namespace netasloc.Core.Services
                     previousSLOC = (int) previousReleases.ElementAt(0).CodeLineCount;
                     previousLOC = (int) previousReleases.ElementAt(0).TotalLineCount;
                 }
-
                 response.DifferenceSLOC = ((int) response.CodeLineCount) - previousSLOC;
                 response.DifferenceLOC = ((int) response.TotalLineCount) - previousLOC;
 
@@ -111,18 +104,12 @@ namespace netasloc.Core.Services
             return response;
         }
 
-        /// <summary>
-        /// Gets a directory and calculates LOC data for all supported files in input directory
-        /// </summary>
-        /// <param name="request">Top level directory full path</param>
-        /// <returns>LOC data of all supported files</returns>
         public LOCForDirectoryResponse AnalyzeLOCForDirectory(string directoryFullPath)
         {
             _logger.LogInformation("LOCService::AnalyzeLOCForDirectory::called. directoryFullPath:{0}", directoryFullPath);
             LOCForDirectoryResponse response = new LOCForDirectoryResponse();
             try
             {
-                // Get all files with the proper file extension
                 string[] fileNames = GetAllFiles(directoryFullPath);
 
                 foreach (var file in fileNames)
@@ -130,49 +117,40 @@ namespace netasloc.Core.Services
                     var fileDirectory = Path.GetDirectoryName(file);
                     var fileName = Path.GetFileName(file);
                     var fileExtension = Path.GetExtension(file);
-                    // Calculate each file statistics
+                    var fileLanguage = GetLanguageForExtension(fileExtension);
+
                     LOCForSingleFileResponse currentFileResponse = AnalyzeLOCForSingleFile(fileDirectory, fileName, fileExtension);
-                    // If current file extension has an entry in the dictionary already
-                    if (response.AllTypesData.ContainsKey(fileExtension))
-                    {
-                        // Update data for the current file extension
-                        response.AllTypesData[fileExtension].TotalLineCount += currentFileResponse.TotalLineCount;
-                        response.AllTypesData[fileExtension].CodeLineCount += currentFileResponse.CodeLineCount;
-                        response.AllTypesData[fileExtension].CommentLineCount += currentFileResponse.CommentLineCount;
-                        response.AllTypesData[fileExtension].EmptyLineCount += currentFileResponse.EmptyLineCount;
-                        // Add single file data to the current file extension
-                        response.AllTypesData[fileExtension].AllFilesData.Add(currentFileResponse);
-                    }
-                    else
-                    {
-                        // Add new entry for the current file extension
-                        response.AllTypesData.Add(fileExtension, new LOCForFileExtension()
-                        {
-                            FileExtension = fileExtension,
-                            CodeLineCount = currentFileResponse.CodeLineCount,
-                            CommentLineCount = currentFileResponse.CommentLineCount,
-                            EmptyLineCount = currentFileResponse.EmptyLineCount,
-                            TotalLineCount = currentFileResponse.TotalLineCount,
-                            AllFilesData = new List<LOCForSingleFileResponse>()
-                            {
-                                currentFileResponse
-                            }
-                        });
-                    }
-                    // Update data for all types of files
+
+                    // If current language has no entry in the dictionary, add new entry
+                    if (!response.AllLanguagesData.ContainsKey(fileLanguage))
+                        response.AllLanguagesData.Add(fileLanguage, new LOCForLanguage());
+                    // If current file extension has no entry in the dictionary, add new entry
+                    if (!response.AllLanguagesData[fileLanguage].AllExtensionsData.ContainsKey(fileExtension))
+                        response.AllLanguagesData[fileLanguage].AllExtensionsData.Add(fileExtension, new LOCForFileExtension());
+                    // Add single file data to the current file extension
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].AllFilesData.Add(currentFileResponse);
+                    // Update data for the current file extension
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].FileExtension = fileExtension;
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].FileCount++;
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].TotalLineCount += currentFileResponse.TotalLineCount;
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].CodeLineCount += currentFileResponse.CodeLineCount;
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].CommentLineCount += currentFileResponse.CommentLineCount;
+                    response.AllLanguagesData[fileLanguage].AllExtensionsData[fileExtension].EmptyLineCount += currentFileResponse.EmptyLineCount;
+                    // Update data for the current language
+                    response.AllLanguagesData[fileLanguage].FileLanguage = fileLanguage;
+                    response.AllLanguagesData[fileLanguage].FileCount++;
+                    response.AllLanguagesData[fileLanguage].TotalLineCount += currentFileResponse.TotalLineCount;
+                    response.AllLanguagesData[fileLanguage].CodeLineCount += currentFileResponse.CodeLineCount;
+                    response.AllLanguagesData[fileLanguage].CommentLineCount += currentFileResponse.CommentLineCount;
+                    response.AllLanguagesData[fileLanguage].EmptyLineCount += currentFileResponse.EmptyLineCount;
+                    // Update data for all
                     response.DirectoryFullPath = directoryFullPath;
                     response.FileCount++;
                     response.TotalLineCount += currentFileResponse.TotalLineCount;
                     response.CodeLineCount += currentFileResponse.CodeLineCount;
                     response.CommentLineCount += currentFileResponse.CommentLineCount;
                     response.EmptyLineCount += currentFileResponse.EmptyLineCount;
-                    // Update data for the current file extension
-                    response.AllTypesData[fileExtension].FileCount++;
                 }
-
-                response.AllTypesData.OrderBy(x => x.Key);
-                foreach (var item in response.AllTypesData.Values)
-                    item.AllFilesData.OrderBy(x => x.FileDirectory).ThenBy(x => x.FileName);
             }
             catch (System.Exception ex)
             {
@@ -183,11 +161,6 @@ namespace netasloc.Core.Services
             return response;
         }
 
-        /// <summary>
-        /// Gets a single file data as an input and creates LOC data for it.
-        /// </summary>
-        /// <param name="request">File directory, file name, file extension</param>
-        /// <returns>LOC data of given file</returns>
         public LOCForSingleFileResponse AnalyzeLOCForSingleFile(string fileDirectory, string fileName, string fileExtension)
         {
             //_logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::called. fileName:{0}", fileName);
@@ -289,7 +262,7 @@ namespace netasloc.Core.Services
                 foreach (var item in language.FileExtensions)
                     if (item == extension)
                         if (language.BlockCommentCharacters.Length > 0)
-                            blockCommentCharacters = language.BlockCommentCharacters[0];
+                            blockCommentCharacters = language.BlockCommentCharacters;
                         else
                             blockCommentCharacters = null;
 
@@ -320,9 +293,17 @@ namespace netasloc.Core.Services
                 foreach (var item in language.FileExtensions)
                     if (item == extension)
                         if (language.LineCommentCharacters.Length > 0)
-                            return language.LineCommentCharacters[0];
+                            return language.LineCommentCharacters;
                         else
                             return null;
+            return null;
+        }
+
+        private string GetLanguageForExtension(string fileExtension)
+        {
+            foreach (var item in Languages)
+                if (item.FileExtensions.Contains(fileExtension))
+                    return item.Alias;
             return null;
         }
 

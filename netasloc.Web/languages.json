@@ -1,28 +1,17 @@
 {
   "languages": [
     {
-      "Aliases": [
-        "C",
-        "c"
-      ],
+      "Alias": "C",
       "FileExtensions": [
         ".c",
         ".h",
         ".i"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "C++",
-        "Cpp",
-        "cpp"
-      ],
+      "Alias": "C++",
       "FileExtensions": [
         ".cpp",
         ".cc",
@@ -38,64 +27,38 @@
         ".hpp.in",
         ".h.in"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "C#",
-        "c#",
-        "csharp"
-      ],
+      "Alias": "C#",
       "FileExtensions": [
         ".cs",
         ".csx",
         ".cake"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "CSS",
-        "css"
-      ],
+      "Alias": "CSS",
       "FileExtensions": [
         ".css"
       ],
-      "LineCommentCharacters": [],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "Docker",
-        "Dockerfile",
-        "Containerfile"
-      ],
+      "Alias": "Docker",
       "FileExtensions": [
         ".dockerfile",
         ".containerfile"
       ],
-      "LineCommentCharacters": [
-        "#"
-      ],
+      "LineCommentCharacters": "#",
       "BlockCommentCharacters": []
     },
     {
-      "Aliases": [
-        "Git",
-        "git"
-      ],
+      "Alias": "Git",
       "FileExtensions": [
         ".gitignore_global",
         ".gitignore",
@@ -113,18 +76,11 @@
         ".editorconfig",
         ".npmrc"
       ],
-      "LineCommentCharacters": [
-        "#"
-      ],
+      "LineCommentCharacters": "#",
       "BlockCommentCharacters": []
     },
     {
-      "Aliases": [
-        "HTML",
-        "htm",
-        "html",
-        "xhtml"
-      ],
+      "Alias": "HTML",
       "FileExtensions": [
         ".html",
         ".htm",
@@ -140,45 +96,28 @@
         ".rhtml",
         ".cshtml"
       ],
-      "LineCommentCharacters": [],
-      "BlockCommentCharacters": [
-        [ "<!--", "-->" ]
-      ]
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": [ "<!--", "-->" ]
     },
     {
-      "Aliases": [
-        "ini"
-      ],
+      "Alias": "ini",
       "FileExtensions": [
         ".ini"
       ],
-      "LineCommentCharacters": [
-        ";"
-      ],
+      "LineCommentCharacters": ";",
       "BlockCommentCharacters": []
     },
     {
-      "Aliases": [
-        "Java",
-        "java"
-      ],
+      "Alias": "Java",
       "FileExtensions": [
         ".java",
         ".jav"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "JavaScript",
-        "javascript",
-        "js"
-      ],
+      "Alias": "JavaScript",
       "FileExtensions": [
         ".js",
         ".es6",
@@ -187,18 +126,11 @@
         ".pac",
         ".jsx"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "JSON",
-        "json"
-      ],
+      "Alias": "JSON",
       "FileExtensions": [
         ".json",
         ".bowerrc",
@@ -221,46 +153,27 @@
         ".jshintrc",
         ".swcrc"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "LESS",
-        "less"
-      ],
+      "Alias": "LESS",
       "FileExtensions": [
         ".less"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "Makefile",
-        "makefile"
-      ],
+      "Alias": "Makefile",
       "FileExtensions": [
         ".mk"
       ],
-      "LineCommentCharacters": [
-        "#"
-      ],
+      "LineCommentCharacters": "#",
       "BlockCommentCharacters": []
     },
     {
-      "Aliases": [
-        "Markdown",
-        "markdown"
-      ],
+      "Alias": "Markdown",
       "FileExtensions": [
         ".md",
         ".mkd",
@@ -272,16 +185,11 @@
         ".mdtext",
         ".workbook"
       ],
-      "LineCommentCharacters": [],
-      "BlockCommentCharacters": [
-        [ "<!--", "-->" ]
-      ]
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": [ "<!--", "-->" ]
     },
     {
-      "Aliases": [
-        "PHP",
-        "php"
-      ],
+      "Alias": "PHP",
       "FileExtensions": [
         ".php",
         ".php4",
@@ -289,18 +197,11 @@
         ".phtml",
         ".ctp"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "Python",
-        "py"
-      ],
+      "Alias": "Python",
       "FileExtensions": [
         ".py",
         ".rpy",
@@ -311,37 +212,19 @@
         ".pyi",
         ".ipy"
       ],
-      "LineCommentCharacters": [
-        "#"
-      ],
-      "BlockCommentCharacters": [
-        [ "\"\"\"", "\"\"\"" ]
-      ]
+      "LineCommentCharacters": "#",
+      "BlockCommentCharacters": [ "\"\"\"", "\"\"\"" ]
     },
     {
-      "Aliases": [
-        "SCSS",
-        "scss"
-      ],
+      "Alias": "SCSS",
       "FileExtensions": [
         ".scss"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "Shell Script",
-        "bash",
-        "sh",
-        "zsh",
-        "ksh",
-        "csh"
-      ],
+      "Alias": "Shell Script",
       "FileExtensions": [
         ".sh",
         ".bash",
@@ -367,33 +250,20 @@
         ".yashrc",
         ".yash_profile"
       ],
-      "LineCommentCharacters": [
-        "#"
-      ],
+      "LineCommentCharacters": "#",
       "BlockCommentCharacters": []
     },
     {
-      "Aliases": [
-        "TypeScript",
-        "typescript",
-        "ts"
-      ],
+      "Alias": "TypeScript",
       "FileExtensions": [
         ".ts",
         ".tsx"
       ],
-      "LineCommentCharacters": [
-        "//"
-      ],
-      "BlockCommentCharacters": [
-        [ "/*", "*/" ]
-      ]
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
-      "Aliases": [
-        "XML",
-        "xml"
-      ],
+      "Alias": "XML",
       "FileExtensions": [
         ".xml",
         ".xsd",
@@ -458,25 +328,18 @@
         ".xsl",
         ".xslt"
       ],
-      "LineCommentCharacters": [],
-      "BlockCommentCharacters": [
-        [ "<!--", "-->" ]
-      ]
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": [ "<!--", "-->" ]
     },
     {
-      "Aliases": [
-        "YAML",
-        "yaml"
-      ],
+      "Alias": "YAML",
       "FileExtensions": [
         ".yml",
         ".eyaml",
         ".eyml",
         ".yaml"
       ],
-      "LineCommentCharacters": [
-        "#"
-      ],
+      "LineCommentCharacters": "#",
       "BlockCommentCharacters": []
     }
   ]
