@@ -32,7 +32,9 @@ namespace netasloc.Web.Controllers
             {
                 result = _locService.AnalyzeLOCForAll(request.Repositories);
 
-                // write json responses to the file
+                if (string.IsNullOrEmpty(request.ResultsDirectory))
+                    request.ResultsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "..", "AnalyzeResults");
+
                 if (!Directory.Exists(request.ResultsDirectory))
                     Directory.CreateDirectory(request.ResultsDirectory);
 
