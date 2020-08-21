@@ -24,7 +24,7 @@ namespace netasloc.Web.Controllers
         }
 
         [HttpGet("AnalyzeAllRepositories")]
-        public JsonResult AnalyzeAllRepositories([FromBody] AnalyzeAllRepositoriesRequest request)
+        public IActionResult AnalyzeAllRepositories([FromBody] AnalyzeAllRepositoriesRequest request)
         {
             _logger.LogInformation("AnalyzeController::AnalyzeAllRepositories::called.");
             LOCForAllResponse result = new LOCForAllResponse();

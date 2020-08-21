@@ -179,7 +179,7 @@ namespace netasloc.Core.Services
                     if (blockCommentPattern == null)
                         _logger.LogWarning("LOCService::AnalyzeLOCForSingleFile:: {0} is not supported.", fileExtension);
                     else
-                        rawData = Regex.Replace(rawData, blockCommentPattern, "");
+                        rawData = Regex.Replace(rawData, blockCommentPattern, "//");
                     // Split raw data to lines and clear it from whitespaces, increment the right group count.
                     string[] lines = rawData.Split("\n");
                     for (int i = 0; i < lines.Length; i++)
