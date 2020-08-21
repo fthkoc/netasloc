@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,6 +13,8 @@ namespace netasloc.Core.Services
 {
     public class LOCService : _ILOCService
     {
+        private static readonly int FIRST_RELEASE_YEAR = 2016;
+        private static readonly int CYCLE_WEEK_COUNT = 5;
         private static readonly string LANGUAGES_FILE = "languages.json";
         private static List<Language> Languages { get; set; } = new List<Language>();
         private static List<string> SupportedExtensions { get; set; } = new List<string>();
@@ -308,7 +311,16 @@ namespace netasloc.Core.Services
 
         private string GetReleaseCode()
         {
-            return "R_" + DateTime.Now.Year.ToString() + "_" + DateTime.Now.Month.ToString() + "_" + DateTime.Now.Day.ToString();
+            CultureInfo cultureInfo = new CultureInfo("en-US");
+            // How many years passed since the first release
+            int yearDifference = DateTime.Now.Year - FIRST_RELEASE_YEAR;
+            // How many sprint cycle passed this year
+            int weekCount = cultureInfo.Calendar.GetWeekOfYear(DateTime.Now, cultureInfo.DateTimeFormat.CalendarWeekRule, cultureInfo.DateTimeFormat.FirstDayOfWeek);
+            // Current sprint cycle number
+            int cycleNumber = ((yearDifference * 52) + weekCount) / CYCLE_WEEK_COUNT;
+            // Release count for current sprint cycle
+            int releaseCount = _dataAccess.GetAllReleases().Where(x => x.ReleaseCode.Contains(cycleNumber.ToString())).Count() + 1;
+            return cycleNumber.ToString() + "." + releaseCount.ToString();
         }
     }
 }

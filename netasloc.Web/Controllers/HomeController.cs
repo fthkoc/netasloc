@@ -26,7 +26,7 @@ namespace netasloc.Web.Controllers
             var model = new IndexViewModel();
             try
             {
-                model.Releases.Releases = _dataAccess.GetAllReleases().Reverse().Take(5);
+                model.Releases.Releases = _dataAccess.GetAllReleases().Take(5).Reverse();
                 model.Releases.releaseCodes = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.ReleaseCode));
                 model.Releases.totalLines = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.TotalLineCount));
                 model.Releases.totalCodeLines = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.CodeLineCount));
