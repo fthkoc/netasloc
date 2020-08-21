@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 
 namespace netasloc.Web.Models
 {
@@ -6,9 +6,10 @@ namespace netasloc.Web.Models
     {
         public AnalyzeAllRepositoriesRequest()
         {
-            DirectoryList = new List<string>();
+            ResultsDirectory = Directory.GetCurrentDirectory();
         }
 
-        public IList<string> DirectoryList { get; set; }
+        public string ResultsDirectory { get; set; }
+        public string[] Repositories { get; set; }
     }
 }

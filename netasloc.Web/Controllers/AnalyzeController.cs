@@ -4,6 +4,9 @@ using netasloc.Core.Models;
 using netasloc.Core.Services;
 using netasloc.Web.Models;
 using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 
 namespace netasloc.Web.Controllers
 {
@@ -21,30 +24,34 @@ namespace netasloc.Web.Controllers
         }
 
         [HttpGet("AnalyzeAllRepositories")]
-        public AnalyzeAllRepositoriesResponse AnalyzeAllRepositories([FromBody] AnalyzeAllRepositoriesRequest request)
+        public JsonResult AnalyzeAllRepositories([FromBody] AnalyzeAllRepositoriesRequest request)
         {
             _logger.LogInformation("AnalyzeController::AnalyzeAllRepositories::called.");
             LOCForAllResponse result = new LOCForAllResponse();
             try
             {
-                result = _locService.AnalyzeLOCForAll(request.DirectoryList);
+                result = _locService.AnalyzeLOCForAll(request.Repositories);
+
+                // write json responses to the file
+                if (!Directory.Exists(request.ResultsDirectory))
+                    Directory.CreateDirectory(request.ResultsDirectory);
+
+                string fileFullPath = Path.Combine(request.ResultsDirectory, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
+
+                if (System.IO.File.Exists(fileFullPath))
+                    throw new FileNotFoundException("{0} exists.", fileFullPath);
+
+                var file = System.IO.File.Create(fileFullPath);
+                var jsonResult = JsonSerializer.Serialize(result);
+                file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
+                file.Close();
             }
             catch (Exception ex)
             {
                 _logger.LogError("AnalyzeController::AnalyzeAllRepositories::Exception::{0}", ex.Message);
             }
             _logger.LogInformation("AnalyzeController::AnalyzeAllRepositories::finished.");
-            return new AnalyzeAllRepositoriesResponse() 
-            {
-                FileCount = result.FileCount,
-                TotalLineCount = result.TotalLineCount,
-                CodeLineCount = result.CodeLineCount,
-                CommentLineCount = result.CommentLineCount,
-                EmptyLineCount = result.EmptyLineCount,
-                DifferenceSLOC = result.DifferenceSLOC,
-                DifferenceLOC = result.DifferenceLOC,
-                AllDirectoriesData = result.AllDirectoriesData
-            };
+            return new JsonResult(result);
         }
     }
 }
