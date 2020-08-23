@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using netasloc.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,20 +25,24 @@ namespace netasloc.Core.Services
 
         public LOCService(ILogger<DataAccessService> logger, _IDataAccessService dataAccess)
         {
+            _logger = logger;
+            _dataAccess = dataAccess;
+
             string rawData = File.ReadAllText(LANGUAGES_FILE);
             dynamic json = JObject.Parse(rawData);
             var jsonArray = json.languages as JArray;
 
             foreach (var language in jsonArray)
                 Languages.Add(JsonConvert.DeserializeObject<Language>(language.ToString()));
-
             foreach (var item in Languages)
                 SupportedExtensions.AddRange(item.FileExtensions);
-
-            _logger = logger;
-            _dataAccess = dataAccess;
         }
 
+        /// <summary>
+        /// Analyzes given directories, calculates LOC, SLOC data
+        /// </summary>
+        /// <param name="directoryFullPaths">List of directories</param>
+        /// <returns>Analyze results for given directory</returns>
         public LOCForAllResponse AnalyzeLOCForAll(IEnumerable<string> directoryFullPaths)
         {
             _logger.LogInformation("LOCService::AnalyzeLOCForAll::called.");
@@ -106,6 +111,11 @@ namespace netasloc.Core.Services
             return response;
         }
 
+        /// <summary>
+        /// Analyzes given directory, calculates LOC, SLOC data
+        /// </summary>
+        /// <param name="directoryFullPath">Directory full path</param>
+        /// <returns>Analyze results for given file</returns>
         public LOCForDirectoryResponse AnalyzeLOCForDirectory(string directoryFullPath)
         {
             _logger.LogInformation("LOCService::AnalyzeLOCForDirectory::called. directoryFullPath:{0}", directoryFullPath);
@@ -113,16 +123,13 @@ namespace netasloc.Core.Services
             try
             {
                 string[] fileNames = GetAllFiles(directoryFullPath);
-
                 foreach (var file in fileNames)
                 {
                     var fileDirectory = Path.GetDirectoryName(file);
                     var fileName = Path.GetFileName(file);
                     var fileExtension = Path.GetExtension(file);
                     var fileLanguage = GetLanguageForExtension(fileExtension);
-
-                    LOCForSingleFileResponse currentFileResponse = AnalyzeLOCForSingleFile(fileDirectory, fileName, fileExtension);
-
+                    var currentFileResponse = AnalyzeLOCForSingleFile(fileDirectory, fileName, fileExtension);
                     // If current language has no entry in the dictionary, add new entry
                     if (!response.AllLanguagesData.ContainsKey(fileLanguage))
                         response.AllLanguagesData.Add(fileLanguage, new LOCForLanguage());
@@ -159,18 +166,25 @@ namespace netasloc.Core.Services
                 _logger.LogError("LOCService::AnalyzeLOCForDirectory::Exception::{0}", ex.Message);
                 throw;
             }
-            _logger.LogInformation("LOCService::AnalyzeLOCForDirectory::finished.  directoryFullPath:{0}, FileCount:{1}, TotalLineCount:{2}", directoryFullPath, response.FileCount, response.TotalLineCount);
+            _logger.LogInformation("LOCService::AnalyzeLOCForDirectory::finished. directoryFullPath:{0}, FileCount:{1}, Total:{2}, Comment:{2}, Empty:{3}, Code:{4}", 
+                directoryFullPath, response.FileCount, response.TotalLineCount, response.CommentLineCount, response.EmptyLineCount, response.CodeLineCount);
             return response;
         }
 
+        /// <summary>
+        /// Analyzes given file, calculates LOC, SLOC data
+        /// </summary>
+        /// <param name="fileDirectory">Directory full path</param>
+        /// <param name="fileName">File name</param>
+        /// <param name="fileExtension">File extension</param>
+        /// <returns>Analyze results for given file</returns>
         public LOCForSingleFileResponse AnalyzeLOCForSingleFile(string fileDirectory, string fileName, string fileExtension)
         {
-            //_logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::called. fileName:{0}", fileName);
+            _logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::called. fileName:{0}", fileName);
             LOCForSingleFileResponse response = new LOCForSingleFileResponse();
             try
             {
                 string fileFullPath = Path.Combine(fileDirectory, fileName);
-
                 if (File.Exists(fileFullPath))
                 {
                     // Read all text from file
@@ -178,17 +192,15 @@ namespace netasloc.Core.Services
                     string[] rawLines = rawData.Split("\n");
                     // Get proper RegEx pattern for the current file extension and delete all block comments from file.
                     string blockCommentPattern = GetBlockCommentRegExPattern(fileExtension);
-
-                    if (blockCommentPattern == null)
+                    if (string.IsNullOrEmpty(blockCommentPattern))
                         _logger.LogWarning("LOCService::AnalyzeLOCForSingleFile:: {0} is not supported.", fileExtension);
                     else
-                        rawData = Regex.Replace(rawData, blockCommentPattern, "//");
+                        rawData = Regex.Replace(rawData, blockCommentPattern, GetLineCommentCharacters(fileExtension));
                     // Split raw data to lines and clear it from whitespaces, increment the right group count.
                     string[] lines = rawData.Split("\n");
                     for (int i = 0; i < lines.Length; i++)
                     {
                         lines[i] = lines[i].Trim();
-
                         if (IsEmptyLine(lines[i]))
                             response.EmptyLineCount++;
                         else if (IsCommentLine(lines[i], fileExtension))
@@ -209,7 +221,8 @@ namespace netasloc.Core.Services
                 _logger.LogError("LOCService::AnalyzeLOCForSingleFile::Exception::{0}", ex.Message);
                 throw;
             }
-            //_logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::finished.  FileName:{0}, TotalLineCount:{1}", response.FileName, response.TotalLineCount);
+            _logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::finished. FileName:{0}, Total:{1}, Comment:{2}, Empty:{3}, Code:{4}", 
+                response.FileName, response.TotalLineCount, response.CommentLineCount, response.EmptyLineCount, response.CodeLineCount);
             return response;
         }
 
@@ -222,11 +235,9 @@ namespace netasloc.Core.Services
         {
             List<string> result = new List<string>();
             string[] allFiles = Directory.GetFiles(directoryFullPath, "*", SearchOption.AllDirectories);
-
             foreach (var item in allFiles)
                 if (SupportedExtensions.Contains(Path.GetExtension(item)))
                     result.Add(item);
-
             return result.ToArray();
         }
 
@@ -245,9 +256,14 @@ namespace netasloc.Core.Services
             return false;
         }
 
+        /// <summary>
+        /// Checks given line is empty or not
+        /// </summary>
+        /// <param name="line">Single line from file</param>
+        /// <returns>True if the line is empty</returns>
         private bool IsEmptyLine(string line)
         {
-            return String.IsNullOrEmpty(line);
+            return string.IsNullOrEmpty(line);
         }
 
         /// <summary>
@@ -297,18 +313,27 @@ namespace netasloc.Core.Services
                         if (language.LineCommentCharacters.Length > 0)
                             return language.LineCommentCharacters;
                         else
-                            return null;
-            return null;
+                            return "";
+            return "";
         }
 
+        /// <summary>
+        /// Returns language alias for given file extension
+        /// </summary>
+        /// <param name="fileExtension">File extension</param>
+        /// <returns>Language alias</returns>
         private string GetLanguageForExtension(string fileExtension)
         {
             foreach (var item in Languages)
                 if (item.FileExtensions.Contains(fileExtension))
                     return item.Alias;
-            return null;
+            return "";
         }
 
+        /// <summary>
+        /// Generates release code for current sprint cycle
+        /// </summary>
+        /// <returns>Release code for current sprint cycle</returns>
         private string GetReleaseCode()
         {
             CultureInfo cultureInfo = new CultureInfo("en-US");

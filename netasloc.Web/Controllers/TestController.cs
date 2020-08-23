@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.Models;
@@ -25,7 +21,7 @@ namespace netasloc.Web.Controllers
         }
 
         [HttpGet("AnalyzeLOCForSingleFile")]
-        public IActionResult AnalyzeLOCForSingleFile([FromBody] TestAnalyzeLOCForSingleFileRequest request)
+        public IActionResult AnalyzeLOCForSingleFile([FromBody] Test_AnalyzeLOCForSingleFileRequest request)
         {
             _logger.LogInformation("TestController::AnalyzeLOCForSingleFile::called.");
             LOCForSingleFileResponse result = new LOCForSingleFileResponse();
@@ -38,6 +34,40 @@ namespace netasloc.Web.Controllers
                 _logger.LogError("TestController::AnalyzeLOCForSingleFile::Exception::{0}", ex.Message);
             }
             _logger.LogInformation("TestController::AnalyzeLOCForSingleFile::finished.");
+            return new JsonResult(result);
+        }
+
+        [HttpGet("AnalyzeLOCForDirectory")]
+        public IActionResult AnalyzeLOCForDirectory([FromBody] Test_AnalyzeLOCForDirectoryRequest request)
+        {
+            _logger.LogInformation("TestController::AnalyzeLOCForDirectory::called.");
+            LOCForDirectoryResponse result = new LOCForDirectoryResponse();
+            try
+            {
+                result = _locService.AnalyzeLOCForDirectory(request.DirectoryFullPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("TestController::AnalyzeLOCForDirectory::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("TestController::AnalyzeLOCForDirectory::finished.");
+            return new JsonResult(result);
+        }
+
+        [HttpGet("AnalyzeLOCForAll")]
+        public IActionResult AnalyzeLOCForAll([FromBody] Test_AnalyzeLOCForAllRequest request)
+        {
+            _logger.LogInformation("TestController::AnalyzeLOCForAll::called.");
+            LOCForAllResponse result = new LOCForAllResponse();
+            try
+            {
+                result = _locService.AnalyzeLOCForAll(request.DirectoryFullPaths);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("TestController::AnalyzeLOCForAll::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("TestController::AnalyzeLOCForAll::finished.");
             return new JsonResult(result);
         }
     }

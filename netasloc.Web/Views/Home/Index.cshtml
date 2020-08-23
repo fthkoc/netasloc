@@ -9,9 +9,9 @@
     <div class="row-fluid cards">
         <div class="card-deck">
             <div class="card mb-4 shadow card-theme">
-                <div class="card-header card-header-theme">
+                @*<div class="card-header card-header-theme">
                     <h5>Release Differences</h5>
-                </div>
+                </div>*@
                 <div class="card-body">
                     <div class="chart-container">
                         <canvas id="ChartSLOC"></canvas>
@@ -19,9 +19,9 @@
                 </div>
             </div>
             <div class="card mb-4 shadow card-theme">
-                <div class="card-header card-header-theme">
+                @*<div class="card-header card-header-theme">
                     <h5>Last Analyze Results</h5>
-                </div>
+                </div>*@
                 <div class="card-body">
                     <div class="chart-container">
                         <canvas id="LastAnalyzedDirectories"></canvas>
@@ -32,9 +32,9 @@
     </div>
     <div class="row-fluid cards">
         <div class="card shadow card-theme card-bottom">
-            <div class="card-header card-header-theme">
+            @*<div class="card-header card-header-theme">
                 <h5>Release Table</h5>
-            </div>
+            </div>*@
             <div class="card-body">
                 <div class="table-container table-responsive" id="releases-table-container">
                     <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
@@ -43,7 +43,7 @@
                                 <th>Release Code</th>
                                 @foreach (var item in Model.Releases.Releases)
                                 {
-                                    <td>@item.ReleaseCode</td>
+                                    <th>@item.ReleaseCode</th>
                                 }
                             </tr>
                             <tr>
@@ -255,7 +255,7 @@
             options: {
                 title: {
                     display: true,
-                    text: 'LOC and SLOC data for releases'
+                    text: 'Release data and differences between releases'
                 },
                 scales: {
                     yAxes: [
