@@ -187,13 +187,16 @@ namespace netasloc.Core.Services
                 string fileFullPath = Path.Combine(fileDirectory, fileName);
                 if (File.Exists(fileFullPath))
                 {
-                    uint commentBlockCount = 0;
                     // Read all text from file
                     string rawData = File.ReadAllText(fileFullPath);
                     char[] delimiters = new char[] { '\n' };
                     string[] rawLines = rawData.Split(delimiters);
                     for (int i = 0; i < rawLines.Length; i++)
+                    {
                         rawLines[i] = rawLines[i].Trim();
+                        if (IsEmptyLine(rawLines[i]))
+                            response.EmptyLineCount++;
+                    }
 
                     // Get proper RegEx pattern for the current file extension and delete all block comments from file.
                     string blockCommentPattern = GetBlockCommentRegExPattern(fileExtension);
@@ -205,47 +208,26 @@ namespace netasloc.Core.Services
                     }
                     else
                     {
-                        // Find comment blocks and calculate total line count of comment blocks
-                        MatchCollection commentBlocks = Regex.Matches(rawData, blockCommentPattern);
-                        commentBlockCount = (uint) commentBlocks.Count;
-                        foreach (Match block in commentBlocks)
-                        { 
-                            string[] blockLines = block.Value.Split(delimiters);
-                            response.CommentLineCount += (uint) blockLines.Length;
-                        }
-                        // Find strings that has block comment characters inside, remove them from block data
-                        MatchCollection strings = Regex.Matches(rawData, stringPattern);
-                        foreach (Match item in strings)
-                        {
-                            foreach (Match block in commentBlocks)
-                            {
-                                if (item.Value.Contains(block.Value))
-                                {
-                                    string[] blockLines = block.Value.Split(delimiters);
-                                    response.CommentLineCount -= (uint) blockLines.Length;
-                                    commentBlockCount -= 1;
-                                    break;
-                                }
-                            }
-                        }
                         // Replace comment blocks with a single empty line
                         rawData = Regex.Replace(rawData, blockCommentPattern, "");
                     }
                     // Split raw data to lines and clear it from whitespaces, increment the right group count.
                     string[] lines = rawData.Split(delimiters);
+                    uint updatedEmptyLines = 0;
                     for (int i = 0; i < lines.Length; i++)
                     {
                         lines[i] = lines[i].Trim();
                         if (IsEmptyLine(lines[i]))
-                            response.EmptyLineCount++;
+                            updatedEmptyLines++;
                         else if (IsCommentLine(lines[i], fileExtension))
                             response.CommentLineCount++;
                         else
                             response.CodeLineCount++;
                     }
-                    // Substract comment blocks total line count from empty line count
-                    //response.CommentLineCount += (uint) (rawLines.Length - lines.Length);
-                    response.EmptyLineCount -= commentBlockCount;
+                    // Calculate comment lines by using replaced single empty line counts
+                    uint blockCommentsTotalLineCount = (uint) (rawLines.Length - lines.Length);
+                    uint blockCommentCount = updatedEmptyLines - response.EmptyLineCount;
+                    response.CommentLineCount += (blockCommentsTotalLineCount + blockCommentCount);
                     // Update response data
                     response.TotalLineCount = (uint) rawLines.Length;
                     response.FileName = fileName;
