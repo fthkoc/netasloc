@@ -197,7 +197,6 @@ namespace netasloc.Core.Services
                         if (IsEmptyLine(rawLines[i]))
                             response.EmptyLineCount++;
                     }
-
                     // Get proper RegEx pattern for the current file extension and delete all block comments from file.
                     string blockCommentPattern = GetBlockCommentRegExPattern(fileExtension);
                     string stringPattern = GetStringRegExPattern(fileExtension);
@@ -208,6 +207,18 @@ namespace netasloc.Core.Services
                     }
                     else
                     {
+                        // Find comment blocks and remove empty lines in comment block from total
+                        MatchCollection commentBlocks = Regex.Matches(rawData, blockCommentPattern);
+                        foreach (Match block in commentBlocks)
+                        {
+                            string[] blockLines = block.Value.Split(delimiters);
+                            for (int i = 0; i < blockLines.Length; i++)
+                            {
+                                blockLines[i] = blockLines[i].Trim();
+                                if (IsEmptyLine(blockLines[i]))
+                                    response.EmptyLineCount--;
+                            }
+                        }
                         // Replace comment blocks with a single empty line
                         rawData = Regex.Replace(rawData, blockCommentPattern, "");
                     }
