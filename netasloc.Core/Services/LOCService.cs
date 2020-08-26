@@ -236,8 +236,12 @@ namespace netasloc.Core.Services
                             response.CodeLineCount++;
                     }
                     // Calculate comment lines by using replaced single empty line counts
-                    uint blockCommentsTotalLineCount = (uint) (rawLines.Length - lines.Length);
-                    uint blockCommentCount = updatedEmptyLines - response.EmptyLineCount;
+                    uint blockCommentsTotalLineCount = (uint)(rawLines.Length - lines.Length);
+                    uint blockCommentCount = 0;
+                    if (updatedEmptyLines > response.EmptyLineCount)
+                        blockCommentCount = updatedEmptyLines - response.EmptyLineCount;
+                    else
+                        blockCommentCount = response.EmptyLineCount - updatedEmptyLines;
                     response.CommentLineCount += (blockCommentsTotalLineCount + blockCommentCount);
                     // Update response data
                     response.TotalLineCount = (uint) rawLines.Length;
