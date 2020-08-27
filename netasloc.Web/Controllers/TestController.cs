@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -99,36 +100,55 @@ namespace netasloc.Web.Controllers
                     }
                 }
 
-                string counterRawData = System.IO.File.ReadAllText(request.netaslocResultFilePath);
-                CounterResult[] counterResult = JsonSerializer.Deserialize<CounterResult[]>(netaslocRawData);
-
-                foreach (var counterItem in counterResult)
+                Dictionary<string, LOCForSingleFileResponse> counterFiles = new Dictionary<string, LOCForSingleFileResponse>();
+                using (var reader = new StreamReader(request.counterResultFilePath))
                 {
-                    LOCForSingleFileResponse item = netaslocFiles[counterItem.filename.ToLower()];
-                    if (counterItem != null)
+                    while (!reader.EndOfStream)
                     {
-                        if (!((counterItem.total == item.TotalLineCount) && (counterItem.comment == item.CommentLineCount)
-                            && (counterItem.blank == item.EmptyLineCount)))
+                        var line = reader.ReadLine();
+                        var values = line.Split(',');
+
+                        string fileName = values[0];
+                        int comment = int.Parse(values[15]);
+                        int blank = int.Parse(values[16]);
+                        int total = int.Parse(values[17]);
+                        int code = total - (comment + blank);
+
+                        LOCForSingleFileResponse item = netaslocFiles[fileName.ToLower()];
+                        if (item != null)
                         {
-                            result.Add(new CompareResultResponse()
+                            if (!((total == item.TotalLineCount) && (comment == item.CommentLineCount) && (blank == item.EmptyLineCount)))
                             {
-                                FileName = Path.Combine(item.FileDirectory, item.FileName),
-                                netaslocTotal = item.TotalLineCount,
-                                counterTotal = counterItem.total,
-                                differenceTotal = ((int) item.TotalLineCount - (int) counterItem.total),
-                                netaslocCode = item.CodeLineCount,
-                                counterCode = counterItem.total - (counterItem.comment + counterItem.blank),
-                                differenceCode = ((int) item.CodeLineCount - (int) (counterItem.total - (counterItem.comment + counterItem.blank))),
-                                netaslocComment = item.CommentLineCount,
-                                counterComment = counterItem.comment,
-                                differenceComment = ((int) item.CommentLineCount - (int) counterItem.comment),
-                                netaslocEmpty = item.EmptyLineCount,
-                                counterEmpty = counterItem.blank,
-                                differenceEmpty = ((int) item.EmptyLineCount - (int) counterItem.blank),
-                            });
+                                result.Add(new CompareResultResponse()
+                                {
+                                    FileName = Path.Combine(item.FileDirectory, item.FileName),
+                                    netaslocTotal = item.TotalLineCount,
+                                    counterTotal = (uint) total,
+                                    differenceTotal = (int) item.TotalLineCount - (int) total,
+                                    netaslocCode = item.CodeLineCount,
+                                    counterCode = (uint) code,
+                                    differenceCode = (int) item.CodeLineCount - code,
+                                    netaslocComment = item.CommentLineCount,
+                                    counterComment = (uint) comment,
+                                    differenceComment = (int) item.CommentLineCount - comment,
+                                    netaslocEmpty = item.EmptyLineCount,
+                                    counterEmpty = (uint) blank,
+                                    differenceEmpty = (int) item.EmptyLineCount - blank,
+                                });
+                            }
                         }
                     }
                 }
+
+                string fileFullPath = Path.Combine(request.resultDirectory, "compare_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
+
+                if (System.IO.File.Exists(fileFullPath))
+                    throw new FileNotFoundException("{0} exists.", fileFullPath);
+
+                var resultFile = System.IO.File.Create(fileFullPath);
+                var jsonResult = JsonSerializer.Serialize(result);
+                resultFile.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
+                resultFile.Close();
             }
             catch (Exception ex)
             {
