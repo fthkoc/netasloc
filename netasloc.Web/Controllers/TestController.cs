@@ -107,16 +107,17 @@ namespace netasloc.Web.Controllers
                     {
                         var line = reader.ReadLine();
                         var values = line.Split(',');
-
-                        string fileName = values[0];
+                        if (values[15] == " \"comment\"")
+                            continue;
+                        string fileName = values[0].Trim(new char[] { '\"', ' '});
                         int comment = int.Parse(values[15]);
                         int blank = int.Parse(values[16]);
                         int total = int.Parse(values[17]);
                         int code = total - (comment + blank);
 
-                        LOCForSingleFileResponse item = netaslocFiles[fileName.ToLower()];
-                        if (item != null)
+                        if (netaslocFiles.Keys.Contains(fileName.ToLower()))
                         {
+                            LOCForSingleFileResponse item = netaslocFiles[fileName.ToLower()];
                             if (!((total == item.TotalLineCount) && (comment == item.CommentLineCount) && (blank == item.EmptyLineCount)))
                             {
                                 result.Add(new CompareResultResponse()
