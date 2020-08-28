@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +67,6 @@ namespace netasloc.Web.Controllers
             return View(model);
         }
 
-
         public IActionResult Create()
         {
             string resultFilePath = _configuration.GetSection("AnalyzeConfiguration:ResultFilePath").Get<string>();
@@ -79,6 +81,53 @@ namespace netasloc.Web.Controllers
                 Directory.CreateDirectory(resultFilePath);
 
             string fileFullPath = Path.Combine(resultFilePath, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
+
+            if (System.IO.File.Exists(fileFullPath))
+                throw new FileNotFoundException("{0} exists.", fileFullPath);
+
+            var file = System.IO.File.Create(fileFullPath);
+            var jsonResult = JsonSerializer.Serialize(result);
+            file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
+            file.Close();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult AnalyzeRemote()
+        {
+            string workingDirectoryPath = _configuration.GetSection("AnalyzeConfiguration:WorkingDirectoryPath").Get<string>();
+            string resultsFolderName = _configuration.GetSection("AnalyzeConfiguration:ResultsFolderName").Get<string>();
+            string[] remoteRepositories = _configuration.GetSection("AnalyzeConfiguration:RemoteRepositories").Get<string[]>();
+            List<string> directoryFullPaths = new List<string>();
+
+            if (!Directory.Exists(workingDirectoryPath))
+                Directory.CreateDirectory(workingDirectoryPath);
+
+            foreach (string repository in remoteRepositories)
+            {
+                string projectName = System.IO.Path.GetFileNameWithoutExtension(repository);
+                string projectFullPath = Path.Combine(workingDirectoryPath, projectName);
+                using (PowerShell powershell = PowerShell.Create())
+                {
+                    if (!Directory.Exists(projectFullPath))
+                        powershell.AddScript(@"git clone" + " " + repository + " " + projectFullPath);
+                    else
+                    {
+                        powershell.AddScript($"cd" + " " + projectFullPath);
+                        powershell.AddScript($"git pull");
+                    }
+                    Collection<PSObject> results = powershell.Invoke();
+                }
+                directoryFullPaths.Add(projectFullPath);
+            }
+
+            var result = _locService.AnalyzeLOCForAll(directoryFullPaths.ToArray());
+
+            string resultsFolderFullPath = Path.Combine(workingDirectoryPath, resultsFolderName);
+            if (!Directory.Exists(resultsFolderFullPath))
+                Directory.CreateDirectory(resultsFolderFullPath);
+
+            string fileFullPath = Path.Combine(resultsFolderFullPath, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
 
             if (System.IO.File.Exists(fileFullPath))
                 throw new FileNotFoundException("{0} exists.", fileFullPath);
