@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.Models;
 using netasloc.Core.Services;
-using netasloc.Web.Models;
+using netasloc.Web.Models.Test;
 
 namespace netasloc.Web.Controllers
 {

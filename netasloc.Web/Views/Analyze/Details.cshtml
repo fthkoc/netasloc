@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Analyze Result Details";
+}
+@model netasloc.Web.Models.ViewModels.AnalyzeDetailsViewModel
+
+<div class="section-container">
+    <div class="row-fluid cards">
+        <div class="card shadow card-theme card-bottom">
+            <div class="card-body">
+                <div class="table-container table-responsive" id="releases-table-container">
+                    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Analyze Result ID</th>
+                                <td>@Model.AnalyzeResult.ID</td>
+                            </tr>
+                            <tr>
+                                <th>Analyze Date</th>
+                                <td>@Model.AnalyzeResult.CreatedAt</td>
+                            </tr>
+                            <tr>
+                                <th>LOC</th>
+                                <td>@Model.AnalyzeResult.TotalLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>Comment</th>
+                                <td>@Model.AnalyzeResult.CommentLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>Empty</th>
+                                <td>@Model.AnalyzeResult.EmptyLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>SLOC</th>
+                                <td>@Model.AnalyzeResult.CodeLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>LOC Difference</th>
+                                <td>@Model.AnalyzeResult.DifferenceLOC</td>
+                            </tr>
+                            <tr>
+                                <th>SLOC Difference</th>
+                                <td>@Model.AnalyzeResult.DifferenceSLOC</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow card-theme card-bottom">
+            <div class="card-body">
+                <div class="table-container table-responsive" id="releases-table-container">
+                    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Directory ID</th>
+                                <th>Project Name</th>
+                                <th>File Count</th>
+                                <th>LOC</th>
+                                <th>Comment</th>
+                                <th>Empty</th>
+                                <th>SLOC</th>
+                            </tr>
+                            @foreach (var item in Model.Directories)
+                            {
+                                <tr>
+                                    <td>@item.ID</td>
+                                    <td>@item.ProjectName</td>
+                                    <td>@item.FileCount</td>
+                                    <td>@item.TotalLineCount</td>
+                                    <td>@item.CommentLineCount</td>
+                                    <td>@item.EmptyLineCount</td>
+                                    <td>@item.CodeLineCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <a asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+

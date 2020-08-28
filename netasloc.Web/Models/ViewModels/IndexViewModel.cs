@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using netasloc.Core.DTO;
-using System;
+﻿using netasloc.Core.DTO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace netasloc.Web.Models
+namespace netasloc.Web.Models.ViewModels
 {
     public class IndexViewModel
     {

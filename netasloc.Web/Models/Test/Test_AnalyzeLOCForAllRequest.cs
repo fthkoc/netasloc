@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace netasloc.Web.Models
+namespace netasloc.Web.Models.Test
 {
     public class Test_AnalyzeLOCForAllRequest
     {

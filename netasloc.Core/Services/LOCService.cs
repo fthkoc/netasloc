@@ -14,8 +14,6 @@ namespace netasloc.Core.Services
 {
     public class LOCService : _ILOCService
     {
-        private static readonly int FIRST_RELEASE_YEAR = 2016;
-        private static readonly int CYCLE_WEEK_COUNT = 5;
         private static readonly string LANGUAGES_FILE = "languages.json";
         private static List<Language> Languages { get; set; } = new List<Language>();
         private static List<string> SupportedExtensions { get; set; } = new List<string>();
@@ -49,6 +47,7 @@ namespace netasloc.Core.Services
             LOCForAllResponse response = new LOCForAllResponse();
             try
             {
+                string directoryIDs = "";
                 foreach (string directory in directoryFullPaths)
                 {
                     if (!(response.AllDirectoriesData.ContainsKey(directory)))
@@ -64,7 +63,7 @@ namespace netasloc.Core.Services
                         string[] tempPath = dirResult.DirectoryFullPath.Split("\\");
                         string projectName = tempPath[tempPath.Length - 1];
 
-                        _dataAccess.CreateDirectory(new DTO.DirectoryDTO()
+                        bool isCreated = _dataAccess.CreateDirectory(new DTO.DirectoryDTO()
                         {
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now,
@@ -76,24 +75,31 @@ namespace netasloc.Core.Services
                             CommentLineCount = dirResult.CommentLineCount,
                             EmptyLineCount = dirResult.EmptyLineCount
                         });
+
+                        if (isCreated)
+                        {
+                            uint id = _dataAccess.GetAllDirectories().ElementAt(0).ID;
+                            directoryIDs += id.ToString() + ",";
+                        }
                     }
                 }
                 int previousSLOC = 0;
                 int previousLOC = 0;
-                var previousReleases = _dataAccess.GetAllReleases();
+                var previousReleases = _dataAccess.GetAllAnalyzeResults();
                 if (previousReleases.Count() > 0)
                 {
-                    previousSLOC = (int) previousReleases.ElementAt(0).CodeLineCount;
-                    previousLOC = (int) previousReleases.ElementAt(0).TotalLineCount;
+                    previousSLOC = (int)previousReleases.ElementAt(0).CodeLineCount;
+                    previousLOC = (int)previousReleases.ElementAt(0).TotalLineCount;
                 }
-                response.DifferenceSLOC = ((int) response.CodeLineCount) - previousSLOC;
-                response.DifferenceLOC = ((int) response.TotalLineCount) - previousLOC;
+                response.DifferenceSLOC = ((int)response.CodeLineCount) - previousSLOC;
+                response.DifferenceLOC = ((int)response.TotalLineCount) - previousLOC;
 
-                _dataAccess.CreateRelease(new DTO.ReleaseDTO()
+                _dataAccess.CreateAnalyzeResult(new DTO.AnalyzeResultDTO()
                 {
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
-                    ReleaseCode = GetReleaseCode(),
+                    DirectoryCount = (uint) directoryFullPaths.Count(),
+                    DirectoryIDList = directoryIDs.Substring(0, directoryIDs.Length - 1),
                     TotalLineCount = response.TotalLineCount,
                     CodeLineCount = response.CodeLineCount,
                     CommentLineCount = response.CommentLineCount,
@@ -379,8 +385,6 @@ namespace netasloc.Core.Services
                 string blockCommentEnd = null;
                 string regexPattern = "";
 
-                // \"[^\\n\\r]*?\\/\\*[\\s\\S]*?\\*\\/[^\n\r]*?\"
-
                 if (blockCommentCharacters != null && blockCommentCharacters.Length > 1)
                 {
                     blockCommentStart = blockCommentCharacters[0];
@@ -495,36 +499,6 @@ namespace netasloc.Core.Services
         private char GetStringCharacter(string fileExtension)
         {
             return '\"';
-        }
-
-        /// <summary>
-        /// Generates release code for current sprint cycle
-        /// </summary>
-        /// <returns>Release code for current sprint cycle</returns>
-        private string GetReleaseCode()
-        {
-            //_logger.LogInformation("LOCService::GetReleaseCode::called.");
-            string releaseCode = "";
-            try
-            {
-                CultureInfo cultureInfo = new CultureInfo("en-US");
-                // How many years passed since the first release
-                int yearDifference = DateTime.Now.Year - FIRST_RELEASE_YEAR;
-                // How many sprint cycle passed this year
-                int weekCount = cultureInfo.Calendar.GetWeekOfYear(DateTime.Now, cultureInfo.DateTimeFormat.CalendarWeekRule, cultureInfo.DateTimeFormat.FirstDayOfWeek);
-                // Current sprint cycle number
-                int cycleNumber = ((yearDifference * 52) + weekCount) / CYCLE_WEEK_COUNT;
-                // Release count for current sprint cycle
-                int releaseCount = _dataAccess.GetAllReleases().Where(x => x.ReleaseCode.Contains(cycleNumber.ToString())).Count() + 1;
-                releaseCode = cycleNumber.ToString() + "." + releaseCount.ToString();
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError("LOCService::GetReleaseCode::Exception::{0}", ex.Message);
-                throw;
-            }
-            //_logger.LogInformation("LOCService::GetReleaseCode::finished. releaseCode:{0}", releaseCode);
-            return releaseCode;
         }
     }
 }

@@ -3,18 +3,17 @@ using netasloc.Data.Entity;
 
 namespace netasloc.Core.Mapping
 {
-    public class ReleaseMapper : _IMapper<Release, ReleaseDTO>
+    public class AnalyzeResultMapper : _IMapper<AnalyzeResult, AnalyzeResultDTO>
     {
-        public ReleaseDTO DataToCore(Release item)
+        public AnalyzeResultDTO DataToCore(AnalyzeResult item)
         {
-            return new ReleaseDTO()
+            return new AnalyzeResultDTO()
             {
                 ID = item.id,
                 CreatedAt = item.created_at,
                 UpdatedAt = item.updated_at,
-                ReleaseCode = item.release_code,
-                ReleaseStart = item.release_start,
-                ReleaseEnd = item.release_end,
+                DirectoryCount = item.directory_count,
+                DirectoryIDList = item.directory_id_list,
                 TotalLineCount = item.total_line_count,
                 CodeLineCount = item.code_line_count,
                 CommentLineCount = item.comment_line_count,
@@ -24,16 +23,15 @@ namespace netasloc.Core.Mapping
             };
         }
 
-        public Release CoreToData(ReleaseDTO item)
+        public AnalyzeResult CoreToData(AnalyzeResultDTO item)
         {
-            return new Release()
+            return new AnalyzeResult()
             {
                 id = item.ID,
                 created_at = item.CreatedAt,
                 updated_at = item.UpdatedAt,
-                release_code = item.ReleaseCode,
-                release_start = item.ReleaseStart,
-                release_end = item.ReleaseEnd,
+                directory_count = item.DirectoryCount,
+                directory_id_list = item.DirectoryIDList,
                 total_line_count = item.TotalLineCount,
                 code_line_count = item.CodeLineCount,
                 comment_line_count = item.CommentLineCount,

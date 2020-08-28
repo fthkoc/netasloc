@@ -1,4 +1,5 @@
 ﻿using netasloc.Core.DTO;
+using System;
 using System.Collections.Generic;
 
 namespace netasloc.Core.Services
@@ -18,5 +19,13 @@ namespace netasloc.Core.Services
         bool CreateRelease(ReleaseDTO item);
         bool UpdateRelease(uint id, ReleaseDTO item);
         bool DeleteRelease(uint id);
+
+        AnalyzeResultDTO GetAnalyzeResultByID(uint id);
+        IEnumerable<AnalyzeResultDTO> GetAllAnalyzeResults();
+        bool CreateAnalyzeResult(AnalyzeResultDTO item);
+        bool UpdateAnalyzeResult(uint id, AnalyzeResultDTO item);
+        bool DeleteAnalyzeResult(uint id);
+
+        IEnumerable<AnalyzeResultDTO> GetAnalyzeResultsForRelease(DateTime ReleaseStart, DateTime ReleaseEnd);
     }
 }

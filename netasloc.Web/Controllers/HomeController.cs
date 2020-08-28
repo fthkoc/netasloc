@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.Services;
 using netasloc.Web.Models;
+using netasloc.Web.Models.ViewModels;
 
 namespace netasloc.Web.Controllers
 {
@@ -50,36 +51,6 @@ namespace netasloc.Web.Controllers
             }
             _logger.LogInformation("HomeController::Index::finished.");
             return View(model);
-        }
-
-        public IActionResult Releases()
-        {
-            _logger.LogInformation("HomeController::Releases::called.");
-            try
-            {
-                
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("HomeController::Releases::Exception::{0}", ex.Message);
-            }
-            _logger.LogInformation("HomeController::Releases::finished.");
-            return View();
-        }
-
-        public IActionResult Analyzes()
-        {
-            _logger.LogInformation("HomeController::Analyzes::called.");
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("HomeController::Analyzes::Exception::{0}", ex.Message);
-            }
-            _logger.LogInformation("HomeController::Analyzes::finished.");
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

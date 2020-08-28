@@ -32,6 +32,8 @@ namespace netasloc.Web
             services.AddScoped<_IDirectoryDAO, DirectoryDAO>();
             services.AddScoped<_IMapper<Release, ReleaseDTO>, ReleaseMapper>();
             services.AddScoped<_IReleaseDAO, ReleaseDAO>();
+            services.AddScoped<_IMapper<AnalyzeResult, AnalyzeResultDTO>, AnalyzeResultMapper>();
+            services.AddScoped<_IAnalyzeResultDAO, AnalyzeResultDAO>();
 
             services.AddTransient<_IDataAccessService, DataAccessService>();
             services.AddTransient<_ILOCService, LOCService>();

@@ -1,59 +1,91 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.Models;
 using netasloc.Core.Services;
-using netasloc.Web.Models;
-using System;
-using System.IO;
-using System.Text;
-using System.Text.Json;
+using netasloc.Web.Models.ViewModels;
 
 namespace netasloc.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AnalyzeController : ControllerBase
+    public class AnalyzeController : Controller
     {
-        private readonly ILogger<AnalyzeController> _logger;
+        private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly _IDataAccessService _dataAccess;
         private readonly _ILOCService _locService;
 
-        public AnalyzeController(ILogger<AnalyzeController> logger, _ILOCService locService)
+        public AnalyzeController(ILogger<HomeController> logger, IConfiguration configuration, 
+            _IDataAccessService dataAccess, _ILOCService locService)
         {
             _logger = logger;
+            _configuration = configuration;
+            _dataAccess = dataAccess;
             _locService = locService;
         }
 
-        [HttpGet("AnalyzeAllRepositories")]
-        public IActionResult AnalyzeAllRepositories([FromBody] AnalyzeAllRepositoriesRequest request)
+        public IActionResult Index()
         {
-            _logger.LogInformation("AnalyzeController::AnalyzeAllRepositories::called.");
-            LOCForAllResponse result = new LOCForAllResponse();
+            _logger.LogInformation("AnalyzeController::Index::called.");
+            AnalyzesViewModel model = new AnalyzesViewModel();
             try
             {
-                result = _locService.AnalyzeLOCForAll(request.Repositories);
-
-                if (string.IsNullOrEmpty(request.ResultsDirectory))
-                    request.ResultsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "..", "AnalyzeResults");
-
-                if (!Directory.Exists(request.ResultsDirectory))
-                    Directory.CreateDirectory(request.ResultsDirectory);
-
-                string fileFullPath = Path.Combine(request.ResultsDirectory, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
-
-                if (System.IO.File.Exists(fileFullPath))
-                    throw new FileNotFoundException("{0} exists.", fileFullPath);
-
-                var file = System.IO.File.Create(fileFullPath);
-                var jsonResult = JsonSerializer.Serialize(result);
-                file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
-                file.Close();
+                model.AnalyzeResults = _dataAccess.GetAllAnalyzeResults().Take(30).ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError("AnalyzeController::AnalyzeAllRepositories::Exception::{0}", ex.Message);
+                _logger.LogError("AnalyzeController::Index::Exception::{0}", ex.Message);
             }
-            _logger.LogInformation("AnalyzeController::AnalyzeAllRepositories::finished.");
-            return new JsonResult(result);
+            _logger.LogInformation("AnalyzeController::Index::finished.");
+            return View(model);
+        }
+
+        public IActionResult Details(uint id)
+        {
+            _logger.LogInformation("AnalyzeController::Details::called.");
+            AnalyzeDetailsViewModel model = new AnalyzeDetailsViewModel();
+            try
+            {
+                model.AnalyzeResult = _dataAccess.GetAnalyzeResultByID(id);
+                string[] idList = model.AnalyzeResult.DirectoryIDList.Split(',');
+                foreach (string directoryID in idList)
+                    if (!string.IsNullOrEmpty(directoryID))
+                        model.Directories.Add(_dataAccess.GetDirectoryByID(uint.Parse(directoryID)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("AnalyzeController::Details::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("AnalyzeController::Details::finished.");
+            return View(model);
+        }
+
+
+        public IActionResult Create()
+        {
+            string resultFilePath = _configuration.GetSection("AnalyzeConfiguration:ResultFilePath").Get<string>();
+            string[] trackedRepositories = _configuration.GetSection("AnalyzeConfiguration:TrackedRepositories").Get<string[]>();
+
+            LOCForAllResponse result = _locService.AnalyzeLOCForAll(trackedRepositories);
+
+            if (!Directory.Exists(resultFilePath))
+                Directory.CreateDirectory(resultFilePath);
+
+            string fileFullPath = Path.Combine(resultFilePath, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
+
+            if (System.IO.File.Exists(fileFullPath))
+                throw new FileNotFoundException("{0} exists.", fileFullPath);
+
+            var file = System.IO.File.Create(fileFullPath);
+            var jsonResult = JsonSerializer.Serialize(result);
+            file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
+            file.Close();
+
+            return RedirectToAction("Index");
         }
     }
 }
