@@ -8,11 +8,31 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <div id="navbar" class="navbar navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+            <span class="logo logo-left">netas</span>
+            <span class="logo logo-right">loc</span>
+        </a>
+    </div>
+    <div class="container-fluid">
+        <div class="row" id="mainContent">
+            <div id="sideBar" class="col-sm-3 col-md-2 d-none d-sm-block sidebar card shadow card-theme">
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Graphs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Releases">Releases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Analyzes">Analyzes</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main" id="dashboard">
+                @RenderBody()
+            </div>
+        </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

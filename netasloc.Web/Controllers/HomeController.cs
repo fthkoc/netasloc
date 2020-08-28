@@ -52,6 +52,36 @@ namespace netasloc.Web.Controllers
             return View(model);
         }
 
+        public IActionResult Releases()
+        {
+            _logger.LogInformation("HomeController::Releases::called.");
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("HomeController::Releases::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("HomeController::Releases::finished.");
+            return View();
+        }
+
+        public IActionResult Analyzes()
+        {
+            _logger.LogInformation("HomeController::Analyzes::called.");
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("HomeController::Analyzes::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("HomeController::Analyzes::finished.");
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
