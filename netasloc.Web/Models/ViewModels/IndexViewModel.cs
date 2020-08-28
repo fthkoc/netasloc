@@ -9,10 +9,12 @@ namespace netasloc.Web.Models.ViewModels
         {
             Releases = new ReleaseData();
             Directories = new DirectoryData();
+            AnalyzeResults = new AnalyzeResultData();
         }
 
         public ReleaseData Releases { get; set; }
         public DirectoryData Directories { get; set; }
+        public AnalyzeResultData AnalyzeResults { get; set; }
     }
 
     public class ReleaseData
@@ -39,5 +41,20 @@ namespace netasloc.Web.Models.ViewModels
         public string totalCommentLines { get; set; }
         public string totalEmptyLines { get; set; }
         public string date { get; set; }
+    }
+
+    public class AnalyzeResultData
+    {
+        public AnalyzeResultData()
+        {
+            AnalyzeResults = new List<AnalyzeResultDTO>();
+        }
+
+        public IEnumerable<AnalyzeResultDTO> AnalyzeResults { get; set; }
+        public string analyzeDates { get; set; }
+        public string totalLines { get; set; }
+        public string totalCodeLines { get; set; }
+        public string slocDifferences { get; set; }
+        public string locDifferences { get; set; }
     }
 }

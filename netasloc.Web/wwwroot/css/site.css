@@ -28,3 +28,12 @@
     padding: 3px 1px 1px 0px;
     border-radius: 4px;
 }
+
+.chart-card-bottom {
+    height: 40vh;
+}
+
+.chart {
+    height: 100%;
+    width: 100%;
+}
