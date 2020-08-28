@@ -77,8 +77,8 @@ namespace netasloc.Web.Controllers
                         release.CommentLineCount = lastAnalyze.CommentLineCount;
                         release.EmptyLineCount = lastAnalyze.EmptyLineCount;
                         release.CodeLineCount = lastAnalyze.CodeLineCount;
-                        release.DifferenceLOC = (int)lastAnalyze.TotalLineCount - ((int)firstAnalyze.TotalLineCount + firstAnalyze.DifferenceLOC);
-                        release.DifferenceSLOC = (int)lastAnalyze.CodeLineCount - ((int)firstAnalyze.CodeLineCount + firstAnalyze.DifferenceSLOC);
+                        release.DifferenceLOC = (int) lastAnalyze.TotalLineCount - (int) firstAnalyze.TotalLineCount;
+                        release.DifferenceSLOC = (int) lastAnalyze.CodeLineCount - (int) firstAnalyze.CodeLineCount;
                         bool isCreated = _dataAccess.CreateRelease(release);
                         if (isCreated)
                         {
