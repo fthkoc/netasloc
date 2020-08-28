@@ -69,21 +69,34 @@ namespace netasloc.Web.Controllers
                     var analyzeResults = _dataAccess.GetAnalyzeResultsForRelease(release.ReleaseStart, release.ReleaseEnd).ToList();
                     if (analyzeResults.Count > 0)
                     {
+                        var previousReleases = _dataAccess.GetAllReleases();
                         var lastAnalyze = analyzeResults.ElementAt(0);
-                        var firstAnalyze = analyzeResults.ElementAt(analyzeResults.Count - 1);
                         release.CreatedAt = DateTime.Now;
                         release.UpdatedAt = DateTime.Now;
                         release.TotalLineCount = lastAnalyze.TotalLineCount;
                         release.CommentLineCount = lastAnalyze.CommentLineCount;
                         release.EmptyLineCount = lastAnalyze.EmptyLineCount;
                         release.CodeLineCount = lastAnalyze.CodeLineCount;
-                        release.DifferenceLOC = (int) lastAnalyze.TotalLineCount - (int) firstAnalyze.TotalLineCount;
-                        release.DifferenceSLOC = (int) lastAnalyze.CodeLineCount - (int) firstAnalyze.CodeLineCount;
+                        if (previousReleases.Count() == 0)
+                        {
+                            release.DifferenceLOC = (int)lastAnalyze.TotalLineCount;
+                            release.DifferenceSLOC = (int)lastAnalyze.CodeLineCount;
+                        }
+                        else
+                        {
+                            release.DifferenceLOC = ((int)lastAnalyze.TotalLineCount - (int)previousReleases.ElementAt(0).TotalLineCount);
+                            release.DifferenceSLOC = ((int)lastAnalyze.CodeLineCount - (int)previousReleases.ElementAt(0).CodeLineCount);
+                        }
                         bool isCreated = _dataAccess.CreateRelease(release);
                         if (isCreated)
                         {
                             ReleaseDTO createdRelease = _dataAccess.GetAllReleases().ElementAt(0);
                             return RedirectToAction("Details", new { id = createdRelease.ID });
+                        }
+                        else
+                        {
+                            _logger.LogError("ReleaseController::Create::isCreated::{0}", isCreated);
+                            throw new Exception("CreateRelease error!");
                         }
                     }
                 }
