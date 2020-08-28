@@ -72,6 +72,9 @@ namespace netasloc.Web.Controllers
 
             LOCForAllResponse result = _locService.AnalyzeLOCForAll(trackedRepositories);
 
+            if (string.IsNullOrEmpty(resultFilePath))
+                resultFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Analyze Results");
+
             if (!Directory.Exists(resultFilePath))
                 Directory.CreateDirectory(resultFilePath);
 
