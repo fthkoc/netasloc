@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Releases";
+}
+@model netasloc.Web.Models.ViewModels.ReleasesViewModel
+
+<div class="section-container">
+    <div class="row-fluid cards">
+        <div class="card shadow card-theme card-bottom">
+            <div class="card-header card-header-theme">
+                <a asp-action="Create" class="btn btn-primary">Create Release</a>
+            </div>
+            <div class="card-body">
+                <div class="table-container table-responsive" id="releases-table-container">
+                    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+                        <tbody>
+                            <tr>
+                                <th></th>
+                                <th>Release Code</th>
+                                <th>LOC</th>
+                                <th>Comment</th>
+                                <th>Empty</th>
+                                <th>SLOC</th>
+                                <th>LOC Difference</th>
+                                <th>SLOC Difference</th>
+                            </tr>
+                            @foreach (var item in Model.Releases)
+                            {
+                                <tr>
+                                    <td><a asp-action="Details" asp-route-id="@item.ID">Details</a></td>
+                                    <td>@item.ReleaseCode</td>
+                                    <td>@item.TotalLineCount</td>
+                                    <td>@item.CommentLineCount</td>
+                                    <td>@item.EmptyLineCount</td>
+                                    <td>@item.CodeLineCount</td>
+                                    <td>@item.DifferenceLOC</td>
+                                    <td>@item.DifferenceSLOC</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Release Details";
+}
+@model netasloc.Web.Models.ViewModels.ReleaseDetailsViewModel
+
+<div class="section-container">
+    <div class="row-fluid cards">
+        <div class="card shadow card-theme card-bottom">
+            <div class="card-body">
+                <div class="table-container table-responsive" id="releases-table-container">
+                    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Release ID</th>
+                                <td>@Model.Release.ID</td>
+                            </tr>
+                            <tr>
+                                <th>Release Code</th>
+                                <td>@Model.Release.ReleaseCode</td>
+                            </tr>
+                            <tr>
+                                <th>Release Start Date</th>
+                                <td>@Model.Release.ReleaseStart</td>
+                            </tr>
+                            <tr>
+                                <th>Release End Date</th>
+                                <td>@Model.Release.ReleaseEnd</td>
+                            </tr>
+                            <tr>
+                                <th>Total</th>
+                                <td>@Model.Release.TotalLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>Comment</th>
+                                <td>@Model.Release.CommentLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>Empty</th>
+                                <td>@Model.Release.EmptyLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>SLOC</th>
+                                <td>@Model.Release.CodeLineCount</td>
+                            </tr>
+                            <tr>
+                                <th>LOC Difference</th>
+                                <td>@Model.Release.DifferenceLOC</td>
+                            </tr>
+                            <tr>
+                                <th>SLOC Difference</th>
+                                <td>@Model.Release.DifferenceSLOC</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow card-theme card-bottom">
+            <div class="card-body">
+                <div class="table-container table-responsive" id="releases-table-container">
+                    <table class="table table-inverse table-bordered table-hover thead-dark table-sm">
+                        <tbody>
+                            <tr>
+                                <th></th>
+                                <th>Analyze Result ID</th>
+                                <th>Created At</th>
+                                <th>Directory Count</th>
+                                <th>LOC</th>
+                                <th>Comment</th>
+                                <th>Empty</th>
+                                <th>SLOC</th>
+                                <th>LOC Difference</th>
+                                <th>SLOC Difference</th>
+                            </tr>
+                            @foreach (var item in Model.AnalyzeResults)
+                            {
+                                <tr>
+                                    <td><a asp-action="AnalyzeDetails" asp-route-id="@item.ID">Details</a></td>
+                                    <td>@item.ID</td>
+                                    <td>@item.CreatedAt</td>
+                                    <td>@item.DirectoryCount</td>
+                                    <td>@item.TotalLineCount</td>
+                                    <td>@item.CommentLineCount</td>
+                                    <td>@item.EmptyLineCount</td>
+                                    <td>@item.CodeLineCount</td>
+                                    <td>@item.DifferenceLOC</td>
+                                    <td>@item.DifferenceSLOC</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <a asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
