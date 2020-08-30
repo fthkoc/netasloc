@@ -9,6 +9,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using netasloc.Core.DTO;
 using netasloc.Core.Models;
 using netasloc.Core.Services;
 using netasloc.Web.Models.ViewModels;
@@ -90,7 +91,8 @@ namespace netasloc.Web.Controllers
             file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
             file.Close();
 
-            return RedirectToAction("Index");
+            AnalyzeResultDTO analyzeResult = _dataAccess.GetAllAnalyzeResults().ElementAt(0);
+            return RedirectToAction("Details", new { id = analyzeResult.ID });
         }
 
         public IActionResult AnalyzeRemote()

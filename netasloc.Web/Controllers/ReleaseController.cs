@@ -25,7 +25,7 @@ namespace netasloc.Web.Controllers
             ReleasesViewModel model = new ReleasesViewModel();
             try
             {
-                model.Releases = _dataAccess.GetAllReleases().Take(5).Reverse().ToList();
+                model.Releases = _dataAccess.GetAllReleases().Take(5).ToList();
             }
             catch (Exception ex)
             {

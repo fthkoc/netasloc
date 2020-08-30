@@ -7,7 +7,7 @@
     <div class="row-fluid cards">
         <div class="card shadow card-theme card-bottom">
             <div class="card-header card-header-theme">
-                <a asp-action="Create" class="btn btn-primary">Create Release</a>
+                <a asp-controller="Release" asp-action="Create" class="btn btn-primary">Create Release</a>
             </div>
             <div class="card-body">
                 <div class="table-container table-responsive" id="releases-table-container">
@@ -26,7 +26,7 @@
                             @foreach (var item in Model.Releases)
                             {
                                 <tr>
-                                    <td><a asp-action="Details" asp-route-id="@item.ID">Details</a></td>
+                                    <td><a asp-controller="Release" asp-action="Details" asp-route-id="@item.ID">Details</a></td>
                                     <td>@item.ReleaseCode</td>
                                     <td>@item.TotalLineCount</td>
                                     <td>@item.CommentLineCount</td>

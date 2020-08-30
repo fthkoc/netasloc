@@ -7,39 +7,40 @@
 
 <div class="section-container">
     <div class="row-fluid cards">
-        <div class="card shadow card-theme card-bottom">
-            <div class="card-header card-header-theme">
-                <h5>Create Release</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <form asp-action="Create">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <div class="form-group">
-                                <label asp-for="ReleaseCode" class="control-label"></label>
-                                <input asp-for="ReleaseCode" class="form-control" />
-                                <span asp-validation-for="ReleaseCode" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="ReleaseStart" class="control-label"></label>
-                                <input asp-for="ReleaseStart" class="form-control" />
-                                <span asp-validation-for="ReleaseStart" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="ReleaseEnd" class="control-label"></label>
-                                <input asp-for="ReleaseEnd" class="form-control" />
-                                <span asp-validation-for="ReleaseEnd" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <input type="submit" value="Create" class="btn btn-primary" />
-                            </div>
-                        </form>
-                    </div>
+        <div class="card-deck">
+            <div class="card shadow card-theme card-bottom">
+                <div class="card-header card-header-theme">
+                    <h5>Create Release</h5>
                 </div>
-
-                <div>
-                    <a asp-action="Index">Back to List</a>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form asp-action="Create">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label asp-for="ReleaseCode" class="control-label">Release Code</label>
+                                    <input asp-for="ReleaseCode" class="form-control" />
+                                    <span asp-validation-for="ReleaseCode" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ReleaseStart" class="control-label">Release Start Date</label>
+                                    <input asp-for="ReleaseStart" class="form-control" />
+                                    <span asp-validation-for="ReleaseStart" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ReleaseEnd" class="control-label">Release End Date</label>
+                                    <input asp-for="ReleaseEnd" class="form-control" />
+                                    <span asp-validation-for="ReleaseEnd" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Create" class="btn btn-primary" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div>
+                        <a asp-controller="Release" asp-action="Index" class="btn btn-primary">Back to List</a>
+                    </div>
                 </div>
             </div>
         </div>

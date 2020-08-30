@@ -49,7 +49,7 @@ namespace netasloc.Data.DAO
         {
             var result = new List<Directory>();
             MySqlCommand command = this._database.Connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM directories";
+            command.CommandText = @"SELECT * FROM directories ORDER BY `created_at` DESC";
             using (var reader = command.ExecuteReader())
             {
                 while (reader.Read())
