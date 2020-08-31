@@ -6,6 +6,8 @@
 # User defined files
 /AnalyzeResults
 /Analyze Results
+.VSCodeCounter
+.vscode
 
 
 # User-specific files
