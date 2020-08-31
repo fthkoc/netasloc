@@ -81,7 +81,7 @@ namespace netasloc.Web.Controllers
             if (!Directory.Exists(resultFilePath))
                 Directory.CreateDirectory(resultFilePath);
 
-            string fileFullPath = Path.Combine(resultFilePath, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
+            string fileFullPath = Path.Combine(resultFilePath, "analyze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
 
             if (System.IO.File.Exists(fileFullPath))
                 throw new FileNotFoundException("{0} exists.", fileFullPath);
@@ -129,7 +129,7 @@ namespace netasloc.Web.Controllers
             if (!Directory.Exists(resultsFolderFullPath))
                 Directory.CreateDirectory(resultsFolderFullPath);
 
-            string fileFullPath = Path.Combine(resultsFolderFullPath, "result_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
+            string fileFullPath = Path.Combine(resultsFolderFullPath, "analyze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
 
             if (System.IO.File.Exists(fileFullPath))
                 throw new FileNotFoundException("{0} exists.", fileFullPath);

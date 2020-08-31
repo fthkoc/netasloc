@@ -58,6 +58,26 @@
       "BlockCommentCharacters": []
     },
     {
+      "Alias": "DOS Batch",
+      "FileExtensions": [
+        ".bat",
+        ".cmd"
+      ],
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": []
+    },
+    {
+      "Alias": "F#",
+      "FileExtensions": [
+        ".fs",
+        ".fsi",
+        ".fsx",
+        ".fsscript"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "(*", "*)" ]
+    },
+    {
       "Alias": "Git",
       "FileExtensions": [
         ".gitignore_global",
@@ -80,6 +100,24 @@
       "BlockCommentCharacters": []
     },
     {
+      "Alias": "Go",
+      "FileExtensions": [
+        ".go"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "Groovy",
+      "FileExtensions": [
+        ".groovy",
+        ".gvy",
+        ".gradle"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
       "Alias": "HTML",
       "FileExtensions": [
         ".html",
@@ -93,8 +131,7 @@
         ".jshtm",
         ".volt",
         ".ejs",
-        ".rhtml",
-        ".cshtml"
+        ".rhtml"
       ],
       "LineCommentCharacters": "",
       "BlockCommentCharacters": [ "<!--", "-->" ]
@@ -111,7 +148,8 @@
       "Alias": "Java",
       "FileExtensions": [
         ".java",
-        ".jav"
+        ".jav",
+        ".class"
       ],
       "LineCommentCharacters": "//",
       "BlockCommentCharacters": [ "/*", "*/" ]
@@ -141,12 +179,22 @@
         ".ts.map",
         ".har",
         ".jslintrc",
-        ".jsonld",
-        ".jsonc",
+        ".jsonld"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "JSON with Comments",
+      "FileExtensions": [
         ".code-workspace",
+        "language-configuration.json",
+        "icon-theme.json",
+        "color-theme.json",
         ".code-snippets",
         ".hintrc",
         ".babelrc",
+        ".jsonc",
         ".eslintrc",
         ".eslintrc.json",
         ".jsfmtrc",
@@ -155,6 +203,14 @@
       ],
       "LineCommentCharacters": "//",
       "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "Jupyter Notebook",
+      "FileExtensions": [
+        ".ipynb"
+      ],
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": []
     },
     {
       "Alias": "LESS",
@@ -189,6 +245,43 @@
       "BlockCommentCharacters": [ "<!--", "-->" ]
     },
     {
+      "Alias": "MIPS Assembly",
+      "FileExtensions": [
+        ".s",
+        ".mips",
+        ".spim",
+        ".asm"
+      ],
+      "LineCommentCharacters": "#",
+      "BlockCommentCharacters": []
+    },
+    {
+      "Alias": "Objective-C",
+      "FileExtensions": [
+        ".m",
+        ".mm"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "Perl",
+      "FileExtensions": [
+        ".pl",
+        ".pm",
+        ".pod",
+        ".t",
+        ".PL",
+        ".psgi",
+        ".p6",
+        ".pl6",
+        ".pm6",
+        ".nqp"
+      ],
+      "LineCommentCharacters": "#",
+      "BlockCommentCharacters": []
+    },
+    {
       "Alias": "PHP",
       "FileExtensions": [
         ".php",
@@ -199,6 +292,18 @@
       ],
       "LineCommentCharacters": "//",
       "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "PowerShell",
+      "FileExtensions": [
+        ".ps1",
+        ".psm1",
+        ".psd1",
+        ".pssc",
+        ".psrc"
+      ],
+      "LineCommentCharacters": "#",
+      "BlockCommentCharacters": [ "<#", "#>" ]
     },
     {
       "Alias": "Python",
@@ -214,6 +319,50 @@
       ],
       "LineCommentCharacters": "#",
       "BlockCommentCharacters": [ "\"\"\"", "\"\"\"" ]
+    },
+    {
+      "Alias": "R",
+      "FileExtensions": [
+        ".r",
+        ".rhistory",
+        ".rprofile",
+        ".rt"
+      ],
+      "LineCommentCharacters": "#",
+      "BlockCommentCharacters": []
+    },
+    {
+      "Alias": "Razor (ASP.NET)",
+      "FileExtensions": [
+        ".cshtml",
+        ".razor"
+      ],
+      "LineCommentCharacters": "",
+      "BlockCommentCharacters": [ "@*", "*@" ]
+    },
+    {
+      "Alias": "Ruby",
+      "FileExtensions": [
+        ".rb",
+        ".rbx",
+        ".rjs",
+        ".gemspec",
+        ".rake",
+        ".ru",
+        ".erb",
+        ".podspec",
+        ".rbi"
+      ],
+      "LineCommentCharacters": "#",
+      "BlockCommentCharacters": [ "=begin", "=end" ]
+    },
+    {
+      "Alias": "Rust",
+      "FileExtensions": [
+        ".rs"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
     },
     {
       "Alias": "SCSS",
@@ -254,6 +403,23 @@
       "BlockCommentCharacters": []
     },
     {
+      "Alias": "SQL",
+      "FileExtensions": [
+        ".sql",
+        ".dsql"
+      ],
+      "LineCommentCharacters": "--",
+      "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "Swift",
+      "FileExtensions": [
+        ".swift"
+      ],
+      "LineCommentCharacters": "//",
+      "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
       "Alias": "TypeScript",
       "FileExtensions": [
         ".ts",
@@ -261,6 +427,17 @@
       ],
       "LineCommentCharacters": "//",
       "BlockCommentCharacters": [ "/*", "*/" ]
+    },
+    {
+      "Alias": "Visual Basic",
+      "FileExtensions": [
+        ".vb",
+        ".brs",
+        ".vbs",
+        ".bas"
+      ],
+      "LineCommentCharacters": "'",
+      "BlockCommentCharacters": []
     },
     {
       "Alias": "XML",
