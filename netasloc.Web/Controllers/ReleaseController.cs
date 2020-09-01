@@ -4,7 +4,9 @@ using netasloc.Core.DTO;
 using netasloc.Core.Services;
 using netasloc.Web.Models.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace netasloc.Web.Controllers
 {
@@ -25,7 +27,7 @@ namespace netasloc.Web.Controllers
             ReleasesViewModel model = new ReleasesViewModel();
             try
             {
-                model.Releases = _dataAccess.GetAllReleases().Take(5).ToList();
+                model.Releases = _dataAccess.GetAllReleases().OrderByDescending(x => x.ReleaseCode).Take(10).ToList();
             }
             catch (Exception ex)
             {
@@ -142,6 +144,40 @@ namespace netasloc.Web.Controllers
             }
             _logger.LogInformation("ReleaseController::DeleteConfirmed::finished.");
             return RedirectToAction("Index");
+        }
+
+        public IActionResult ExportCSV()
+        {
+            _logger.LogInformation("ReleaseController::ExportCSV::called.");
+            string resultFileName = "releases_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv";
+            List<ReleaseDTO> releases;
+            string fileContent = "ID,CreatedAt,UpdatedAt,ReleaseCode,ReleaseStart,ReleaseEnd,TotalLineCount,CodeLineCount,CommentLineCount,EmptyLineCount,DifferenceSLOC,DifferenceLOC";
+            try
+            {
+                releases = _dataAccess.GetAllReleases().ToList();
+                foreach (var release in releases)
+                {
+                    fileContent += "\n";
+                    fileContent += release.ID.ToString() + ",";
+                    fileContent += release.CreatedAt.ToString() + ",";
+                    fileContent += release.UpdatedAt.ToString() + ",";
+                    fileContent += release.ReleaseCode.ToString() + ",";
+                    fileContent += release.ReleaseStart.ToString() + ",";
+                    fileContent += release.ReleaseEnd.ToString() + ",";
+                    fileContent += release.TotalLineCount.ToString() + ",";
+                    fileContent += release.CodeLineCount.ToString() + ",";
+                    fileContent += release.CommentLineCount.ToString() + ",";
+                    fileContent += release.EmptyLineCount.ToString() + ",";
+                    fileContent += release.DifferenceSLOC.ToString() + ",";
+                    fileContent += release.DifferenceLOC.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ReleaseController::ExportCSV::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("ReleaseController::ExportCSV::finished.");
+            return File(Encoding.Default.GetBytes(fileContent), "application/octet-stream", resultFileName);
         }
     }
 }
