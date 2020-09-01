@@ -5,31 +5,34 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace netasloc.Core.Services
 {
     public class LOCService : _ILOCService
     {
-        private static readonly string LANGUAGES_FILE = "languages.json";
         private static List<Language> Languages { get; set; } = new List<Language>();
         private static List<string> SupportedExtensions { get; set; } = new List<string>();
 
         private readonly ILogger<DataAccessService> _logger;
+        private readonly IConfiguration _configuration;
         private readonly _IDataAccessService _dataAccess;
 
-        public LOCService(ILogger<DataAccessService> logger, _IDataAccessService dataAccess)
+        public LOCService(ILogger<DataAccessService> logger, IConfiguration configuration, _IDataAccessService dataAccess)
         {
             _logger = logger;
+            _configuration = configuration;
             _dataAccess = dataAccess;
-
-            string rawData = File.ReadAllText(LANGUAGES_FILE);
+            // Read language data from languages.json
+            string languageFile = _configuration.GetSection("AnalyzeConfiguration:LanguageFilePath").Get<string>();
+            string rawData = File.ReadAllText(languageFile);
             dynamic json = JObject.Parse(rawData);
             var jsonArray = json.languages as JArray;
-
             foreach (var language in jsonArray)
                 Languages.Add(JsonConvert.DeserializeObject<Language>(language.ToString()));
             foreach (var item in Languages)
@@ -60,8 +63,7 @@ namespace netasloc.Core.Services
                         response.EmptyLineCount += dirResult.EmptyLineCount;
                         response.AllDirectoriesData.Add(directory, dirResult);
 
-                        string[] tempPath = dirResult.DirectoryFullPath.Split("\\");
-                        string projectName = tempPath[tempPath.Length - 1];
+                        string projectName = Path.GetFileNameWithoutExtension(dirResult.DirectoryFullPath);
 
                         bool isCreated = _dataAccess.CreateDirectory(new DTO.DirectoryDTO()
                         {
@@ -78,7 +80,8 @@ namespace netasloc.Core.Services
 
                         if (isCreated)
                         {
-                            uint id = _dataAccess.GetAllDirectories().ElementAt(0).ID;
+                            var lastItem = _dataAccess.GetAllDirectories().ElementAt(0);
+                            uint id = lastItem.ID;
                             directoryIDs += id.ToString() + ",";
                         }
                     }
@@ -94,12 +97,14 @@ namespace netasloc.Core.Services
                 response.DifferenceSLOC = ((int)response.CodeLineCount) - previousSLOC;
                 response.DifferenceLOC = ((int)response.TotalLineCount) - previousLOC;
 
+                directoryIDs = directoryIDs.Substring(0, directoryIDs.Length - 1);
+
                 _dataAccess.CreateAnalyzeResult(new DTO.AnalyzeResultDTO()
                 {
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                     DirectoryCount = (uint) directoryFullPaths.Count(),
-                    DirectoryIDList = directoryIDs.Substring(0, directoryIDs.Length - 1),
+                    DirectoryIDList = directoryIDs,
                     TotalLineCount = response.TotalLineCount,
                     CodeLineCount = response.CodeLineCount,
                     CommentLineCount = response.CommentLineCount,
@@ -263,6 +268,82 @@ namespace netasloc.Core.Services
             _logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::finished. FileName:{0}, Total:{1}, Comment:{2}, Empty:{3}, Code:{4}", 
                 response.FileName, response.TotalLineCount, response.CommentLineCount, response.EmptyLineCount, response.CodeLineCount);
             return response;
+        }
+
+        /// <summary>
+        /// Writes LOCForAllResponse object as a JSON file into the given directory.
+        /// </summary>
+        /// <param name="directoryToWrite">Where to write</param>
+        /// <param name="result">Analyze result object to write</param>
+        /// <returns>Is file written successfully or not</returns>
+        public bool WriteResultToFile(string directoryToWrite, LOCForAllResponse result)
+        {
+            //_logger.LogInformation("LOCService::WriteResultForAllToFile::called. directoryToWrite:{0}", directoryToWrite);
+            try
+            {
+                if (!Directory.Exists(directoryToWrite))
+                    Directory.CreateDirectory(directoryToWrite);
+
+                string resultFileName = "analyze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json";
+                string fileFullPath = Path.Combine(directoryToWrite, resultFileName);
+
+                if (System.IO.File.Exists(fileFullPath))
+                    throw new FileNotFoundException("{0} exists.", fileFullPath);
+
+                var file = System.IO.File.Create(fileFullPath);
+                var jsonResult = System.Text.Json.JsonSerializer.Serialize(result);
+                file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
+                file.Close();
+                //_logger.LogInformation("LOCService::WriteResultForAllToFile::finished.");
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError("LOCService::WriteResultForAllToFile::Exception::{0}", ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Clones given list of remote repositories into the result folder by using git, get latest version of them if they already exists.
+        /// </summary>
+        /// <param name="WorkingDirectoryPath">Where to write files and clone projects</param>
+        /// <param name="RemoteRepositories">List of remote repositories, git clone links</param>
+        /// <returns>List of absolute paths of the projects</returns>
+        public string[] GetRepositoriesFromGit(string WorkingDirectoryPath, string[] RemoteRepositories)
+        {
+            //_logger.LogInformation("LOCService::GetRepositoriesFromGit::called. WorkingDirectoryPath:{0}", WorkingDirectoryPath);
+            List<string> directoryFullPaths = new List<string>();
+            try
+            {
+                if (!Directory.Exists(WorkingDirectoryPath))
+                    Directory.CreateDirectory(WorkingDirectoryPath);
+
+                foreach (string repository in RemoteRepositories)
+                {
+                    string projectName = System.IO.Path.GetFileNameWithoutExtension(repository);
+                    string projectFullPath = Path.Combine(WorkingDirectoryPath, projectName);
+                    using (PowerShell powershell = PowerShell.Create())
+                    {
+                        if (!Directory.Exists(projectFullPath))
+                            powershell.AddScript(@"git clone" + " " + repository + " " + projectFullPath);
+                        else
+                        {
+                            powershell.AddScript($"cd" + " " + projectFullPath);
+                            powershell.AddScript($"git pull");
+                        }
+                        Collection<PSObject> results = powershell.Invoke();
+                    }
+                    directoryFullPaths.Add(projectFullPath);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError("LOCService::GetRepositoriesFromGit::Exception::{0}", ex.Message);
+                throw;
+            }
+            //_logger.LogInformation("LOCService::GetRepositoriesFromGit::finished.");
+            return directoryFullPaths.ToArray();
         }
 
         /// <summary>

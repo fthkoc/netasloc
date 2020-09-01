@@ -332,7 +332,7 @@
       "BlockCommentCharacters": []
     },
     {
-      "Alias": "Razor (ASP.NET)",
+      "Alias": "Razor Pages (ASP.NET)",
       "FileExtensions": [
         ".cshtml",
         ".razor"

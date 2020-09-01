@@ -2,7 +2,7 @@
 
 namespace netasloc.Web.Models.API
 {
-    public class AnalyzeAllRepositoriesRequest
+    public class AnalyzeLocalRepositoriesRequest
     {
         public string ResultsDirectory { get; set; }
         public string[] Repositories { get; set; }

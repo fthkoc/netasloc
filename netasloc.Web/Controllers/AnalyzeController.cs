@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
-using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -68,78 +63,59 @@ namespace netasloc.Web.Controllers
             return View(model);
         }
 
-        public IActionResult Create()
+        public IActionResult AnalyzeLocal()
         {
-            string resultFilePath = _configuration.GetSection("AnalyzeConfiguration:ResultFilePath").Get<string>();
-            string[] trackedRepositories = _configuration.GetSection("AnalyzeConfiguration:TrackedRepositories").Get<string[]>();
+            _logger.LogInformation("AnalyzeController::AnalyzeLocal::called.");
+            try
+            {
+                string resultFilePath = _configuration.GetSection("AnalyzeConfiguration:ResultFilePath").Get<string>();
+                if (string.IsNullOrEmpty(resultFilePath))
+                    resultFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Analyze Results");
+                string[] trackedRepositories = _configuration.GetSection("AnalyzeConfiguration:TrackedRepositories").Get<string[]>();
 
-            LOCForAllResponse result = _locService.AnalyzeLOCForAll(trackedRepositories);
+                LOCForAllResponse result = _locService.AnalyzeLOCForAll(trackedRepositories);
 
-            if (string.IsNullOrEmpty(resultFilePath))
-                resultFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Analyze Results");
+                bool isWritten = _locService.WriteResultToFile(resultFilePath, result);
+                if (!isWritten)
+                    throw new Exception("Error at writing result in '" + resultFilePath + "'!");
 
-            if (!Directory.Exists(resultFilePath))
-                Directory.CreateDirectory(resultFilePath);
-
-            string fileFullPath = Path.Combine(resultFilePath, "analyze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
-
-            if (System.IO.File.Exists(fileFullPath))
-                throw new FileNotFoundException("{0} exists.", fileFullPath);
-
-            var file = System.IO.File.Create(fileFullPath);
-            var jsonResult = JsonSerializer.Serialize(result);
-            file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
-            file.Close();
-
-            AnalyzeResultDTO analyzeResult = _dataAccess.GetAllAnalyzeResults().ElementAt(0);
-            return RedirectToAction("Details", new { id = analyzeResult.ID });
+                AnalyzeResultDTO analyzeResult = _dataAccess.GetAllAnalyzeResults().ElementAt(0);
+                _logger.LogInformation("AnalyzeController::AnalyzeLocal::finished.");
+                return RedirectToAction("Details", new { id = analyzeResult.ID });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("AnalyzeController::AnalyzeLocal::Exception::{0}", ex.Message);
+                return null;
+            }
         }
 
         public IActionResult AnalyzeRemote()
         {
-            string workingDirectoryPath = _configuration.GetSection("AnalyzeConfiguration:WorkingDirectoryPath").Get<string>();
-            string resultsFolderName = _configuration.GetSection("AnalyzeConfiguration:ResultsFolderName").Get<string>();
-            string[] remoteRepositories = _configuration.GetSection("AnalyzeConfiguration:RemoteRepositories").Get<string[]>();
-            List<string> directoryFullPaths = new List<string>();
-
-            if (!Directory.Exists(workingDirectoryPath))
-                Directory.CreateDirectory(workingDirectoryPath);
-
-            foreach (string repository in remoteRepositories)
+            _logger.LogInformation("AnalyzeController::AnalyzeRemote::called.");
+            try
             {
-                string projectName = System.IO.Path.GetFileNameWithoutExtension(repository);
-                string projectFullPath = Path.Combine(workingDirectoryPath, projectName);
-                using (PowerShell powershell = PowerShell.Create())
-                {
-                    if (!Directory.Exists(projectFullPath))
-                        powershell.AddScript(@"git clone" + " " + repository + " " + projectFullPath);
-                    else
-                    {
-                        powershell.AddScript($"cd" + " " + projectFullPath);
-                        powershell.AddScript($"git pull");
-                    }
-                    Collection<PSObject> results = powershell.Invoke();
-                }
-                directoryFullPaths.Add(projectFullPath);
+                string workingDirectoryPath = _configuration.GetSection("AnalyzeConfiguration:WorkingDirectoryPath").Get<string>();
+                string resultsFolderName = _configuration.GetSection("AnalyzeConfiguration:ResultsFolderName").Get<string>();
+                string[] remoteRepositories = _configuration.GetSection("AnalyzeConfiguration:RemoteRepositories").Get<string[]>();
+
+                var directoryFullPaths = _locService.GetRepositoriesFromGit(workingDirectoryPath, remoteRepositories);
+                var result = _locService.AnalyzeLOCForAll(directoryFullPaths);
+
+                string resultsFolderFullPath = Path.Combine(workingDirectoryPath, resultsFolderName);
+                bool isWritten = _locService.WriteResultToFile(resultsFolderFullPath, result);
+                if (!isWritten)
+                    throw new Exception("Error at writing result in '" + resultsFolderFullPath + "'!");
+
+                AnalyzeResultDTO analyzeResult = _dataAccess.GetAllAnalyzeResults().ElementAt(0);
+                _logger.LogInformation("AnalyzeController::AnalyzeRemote::finished.");
+                return RedirectToAction("Details", new { id = analyzeResult.ID });
             }
-
-            var result = _locService.AnalyzeLOCForAll(directoryFullPaths.ToArray());
-
-            string resultsFolderFullPath = Path.Combine(workingDirectoryPath, resultsFolderName);
-            if (!Directory.Exists(resultsFolderFullPath))
-                Directory.CreateDirectory(resultsFolderFullPath);
-
-            string fileFullPath = Path.Combine(resultsFolderFullPath, "analyze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json");
-
-            if (System.IO.File.Exists(fileFullPath))
-                throw new FileNotFoundException("{0} exists.", fileFullPath);
-
-            var file = System.IO.File.Create(fileFullPath);
-            var jsonResult = JsonSerializer.Serialize(result);
-            file.Write(Encoding.Default.GetBytes(jsonResult), 0, jsonResult.Length);
-            file.Close();
-
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                _logger.LogError("AnalyzeController::AnalyzeRemote::Exception::{0}", ex.Message);
+                return null;
+            }
         }
     }
 }

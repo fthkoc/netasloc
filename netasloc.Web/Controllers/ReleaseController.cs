@@ -95,7 +95,6 @@ namespace netasloc.Web.Controllers
                         }
                         else
                         {
-                            _logger.LogError("ReleaseController::Create::isCreated::{0}", isCreated);
                             throw new Exception("CreateRelease error!");
                         }
                     }
