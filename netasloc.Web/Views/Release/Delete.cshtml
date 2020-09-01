@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Release Details";
+    ViewData["Title"] = "Delete Release";
 }
 @model netasloc.Web.Models.ViewModels.ReleaseDetailsViewModel
 
@@ -8,14 +8,21 @@
         <div class="card-deck">
             <div class="card shadow card-theme card-bottom">
                 <div class="card-header card-header-theme">
-                    <h5>
-                        Release Details 
-                        <span class="float-right">
-                            <a asp-controller="Release" asp-action="Delete" asp-route-id="@Model.Release.ID" class="btn btn-danger">Delete</a>
-                            |
-                            <a asp-controller="Release" asp-action="Index" class="btn btn-info">Back to List</a>
-                        </span>
-                    </h5>
+                    <h3>Are you sure you want to delete this?</h3>
+                    <form asp-controller="Release" asp-action="Delete">
+                        <input type="hidden" asp-for="Release.ID" />
+                        <input type="submit" value="Delete" class="btn btn-danger" /> 
+                        | 
+                        <a asp-controller="Release" asp-action="Details" asp-route-id="@Model.Release.ID" class="btn btn-info">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="card-deck">
+            <div class="card shadow card-theme card-bottom">
+                <div class="card-header card-header-theme">
+                    <h5>Release Details</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-container table-responsive" id="releases-table-container">

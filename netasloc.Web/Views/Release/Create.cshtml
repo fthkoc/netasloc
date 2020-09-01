@@ -10,7 +10,12 @@
         <div class="card-deck">
             <div class="card shadow card-theme card-bottom">
                 <div class="card-header card-header-theme">
-                    <h5>Create Release</h5>
+                    <h5>
+                        Create Release
+                        <span class="float-right">
+                            <a asp-controller="Release" asp-action="Index" class="btn btn-info">Back to List</a>
+                        </span>
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -37,9 +42,6 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
-                    <div>
-                        <a asp-controller="Release" asp-action="Index" class="btn btn-primary">Back to List</a>
                     </div>
                 </div>
             </div>

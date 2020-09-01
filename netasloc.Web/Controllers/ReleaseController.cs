@@ -107,5 +107,41 @@ namespace netasloc.Web.Controllers
             _logger.LogInformation("ReleaseController::Create::finished.");
             return View(release);
         }
+
+        public IActionResult Delete(uint id)
+        {
+            _logger.LogInformation("ReleaseController::Delete::called.");
+            ReleaseDetailsViewModel model = new ReleaseDetailsViewModel();
+            try
+            {
+                model.Release = _dataAccess.GetReleaseByID(id);
+                model.AnalyzeResults = _dataAccess.GetAnalyzeResultsForRelease(model.Release.ReleaseStart, model.Release.ReleaseEnd).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ReleaseController::Delete::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("ReleaseController::Delete::finished.");
+            return View(model);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(uint id)
+        {
+            _logger.LogInformation("ReleaseController::DeleteConfirmed::called.");
+            try
+            {
+                bool isDeleted = _dataAccess.DeleteRelease(id);
+                if (!isDeleted)
+                    throw new Exception("DeleteRelease error!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ReleaseController::DeleteConfirmed::Exception::{0}", ex.Message);
+            }
+            _logger.LogInformation("ReleaseController::DeleteConfirmed::finished.");
+            return RedirectToAction("Index");
+        }
     }
 }

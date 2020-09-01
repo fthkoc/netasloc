@@ -7,8 +7,12 @@
     <div class="row-fluid cards">
         <div class="card shadow card-theme card-bottom">
             <div class="card-header card-header-theme">
-                <a asp-controller="Analyze" asp-action="AnalyzeLocal" class="btn btn-primary">Analyze Tracked Repositories in 'appsettings.json'</a>
-                <a asp-controller="Analyze" asp-action="AnalyzeRemote" class="btn btn-primary float-right">Analyze Remote Repositories in 'appsettings.json'</a>
+                <h5>
+                    Analyze Results
+                    <span class="float-right">
+                        <a asp-controller="Analyze" asp-action="AnalyzeRemote" class="btn btn-primary">Analyze Remote Repositories in 'appsettings.json'</a>
+                    </span>
+                </h5>
             </div>
             <div class="card-body">
                 <div class="table-container table-responsive" id="releases-table-container">

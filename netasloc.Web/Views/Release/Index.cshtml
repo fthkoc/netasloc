@@ -7,7 +7,12 @@
     <div class="row-fluid cards">
         <div class="card shadow card-theme card-bottom">
             <div class="card-header card-header-theme">
-                <a asp-controller="Release" asp-action="Create" class="btn btn-primary">Create Release</a>
+                <h5>
+                    Releases
+                    <span class="float-right">
+                        <a asp-controller="Release" asp-action="Create" class="btn btn-primary">Create Release</a>
+                    </span>
+                </h5>
             </div>
             <div class="card-body">
                 <div class="table-container table-responsive" id="releases-table-container">

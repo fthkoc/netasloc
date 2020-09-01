@@ -8,7 +8,12 @@
         <div class="card-deck">
             <div class="card shadow card-theme card-bottom">
                 <div class="card-header card-header-theme">
-                    <h5>Analyze Result Details</h5>
+                    <h5>
+                        Analyze Result Details 
+                        <span class="float-right">
+                            <a asp-controller="Analyze" asp-action="Index" class="btn btn-info">Back to List</a>
+                        </span>
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-container table-responsive" id="releases-table-container">
@@ -86,7 +91,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <a asp-controller="Analyze" asp-action="Index" class="btn btn-primary">Back to List</a>
                 </div>
             </div>
         </div>
