@@ -16,7 +16,9 @@ namespace netasloc.Core.Services
 {
     public class LOCService : _ILOCService
     {
+        // Language data from 'languages.json'
         private static List<Language> Languages { get; set; } = new List<Language>();
+        // List of supported file extensions
         private static List<string> SupportedExtensions { get; set; } = new List<string>();
 
         private readonly ILogger<DataAccessService> _logger;
@@ -28,6 +30,7 @@ namespace netasloc.Core.Services
             _logger = logger;
             _configuration = configuration;
             _dataAccess = dataAccess;
+
             // Read language data from languages.json
             string languageFile = _configuration.GetSection("AnalyzeConfiguration:LanguageFilePath").Get<string>();
             string rawData = File.ReadAllText(languageFile);
@@ -63,13 +66,11 @@ namespace netasloc.Core.Services
                         response.EmptyLineCount += dirResult.EmptyLineCount;
                         response.AllDirectoriesData.Add(directory, dirResult);
 
-                        string projectName = Path.GetFileNameWithoutExtension(dirResult.DirectoryFullPath);
-
                         bool isCreated = _dataAccess.CreateDirectory(new DTO.DirectoryDTO()
                         {
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now,
-                            ProjectName = projectName,
+                            ProjectName = Path.GetFileNameWithoutExtension(dirResult.DirectoryFullPath),
                             FullPath = dirResult.DirectoryFullPath,
                             FileCount = dirResult.FileCount,
                             TotalLineCount = dirResult.TotalLineCount,
@@ -77,15 +78,11 @@ namespace netasloc.Core.Services
                             CommentLineCount = dirResult.CommentLineCount,
                             EmptyLineCount = dirResult.EmptyLineCount
                         });
-
                         if (isCreated)
-                        {
-                            var lastItem = _dataAccess.GetAllDirectories().ElementAt(0);
-                            uint id = lastItem.ID;
-                            directoryIDs += id.ToString() + ",";
-                        }
+                            directoryIDs += _dataAccess.GetAllDirectories().ElementAt(0).ID.ToString() + ",";
                     }
                 }
+                // Calculate difference
                 int previousSLOC = 0;
                 int previousLOC = 0;
                 var previousReleases = _dataAccess.GetAllAnalyzeResults();
@@ -96,9 +93,8 @@ namespace netasloc.Core.Services
                 }
                 response.DifferenceSLOC = ((int)response.CodeLineCount) - previousSLOC;
                 response.DifferenceLOC = ((int)response.TotalLineCount) - previousLOC;
-
+                // Remove last comma from array
                 directoryIDs = directoryIDs.Substring(0, directoryIDs.Length - 1);
-
                 _dataAccess.CreateAnalyzeResult(new DTO.AnalyzeResultDTO()
                 {
                     CreatedAt = DateTime.Now,
@@ -116,7 +112,7 @@ namespace netasloc.Core.Services
             catch (System.Exception ex)
             {
                 _logger.LogError("LOCService::AnalyzeLOCForAll::Exception::{0}", ex.Message);
-                throw;
+                throw ex;
             }
             _logger.LogInformation("LOCService::AnalyzeLOCForAll::finished.");
             return response;
@@ -175,7 +171,7 @@ namespace netasloc.Core.Services
             catch (System.Exception ex)
             {
                 _logger.LogError("LOCService::AnalyzeLOCForDirectory::Exception::{0}", ex.Message);
-                throw;
+                throw ex;
             }
             _logger.LogInformation("LOCService::AnalyzeLOCForDirectory::finished. directoryFullPath:{0}, FileCount:{1}, Total:{2}, Comment:{2}, Empty:{3}, Code:{4}", 
                 directoryFullPath, response.FileCount, response.TotalLineCount, response.CommentLineCount, response.EmptyLineCount, response.CodeLineCount);
@@ -210,8 +206,6 @@ namespace netasloc.Core.Services
                     }
                     // Get proper RegEx pattern for the current file extension and delete all block comments from file.
                     string blockCommentPattern = GetBlockCommentRegExPattern(fileExtension);
-                    string stringPattern = GetStringRegExPattern(fileExtension);
-
                     if (string.IsNullOrEmpty(blockCommentPattern))
                     {
                         _logger.LogWarning("LOCService::AnalyzeLOCForSingleFile:: {0} doesn't have a defined block comment pattern.", fileExtension);
@@ -263,7 +257,7 @@ namespace netasloc.Core.Services
             catch (System.Exception ex)
             {
                 _logger.LogError("LOCService::AnalyzeLOCForSingleFile::Exception::{0}", ex.Message);
-                throw;
+                throw ex;
             }
             _logger.LogInformation("LOCService::AnalyzeLOCForSingleFile::finished. FileName:{0}, Total:{1}, Comment:{2}, Empty:{3}, Code:{4}", 
                 response.FileName, response.TotalLineCount, response.CommentLineCount, response.EmptyLineCount, response.CodeLineCount);
@@ -288,7 +282,7 @@ namespace netasloc.Core.Services
                 string fileFullPath = Path.Combine(directoryToWrite, resultFileName);
 
                 if (System.IO.File.Exists(fileFullPath))
-                    throw new FileNotFoundException("{0} exists.", fileFullPath);
+                    throw new Exception(fileFullPath + " exists.");
 
                 var file = System.IO.File.Create(fileFullPath);
                 var jsonResult = System.Text.Json.JsonSerializer.Serialize(result);
@@ -300,7 +294,7 @@ namespace netasloc.Core.Services
             catch (System.Exception ex)
             {
                 _logger.LogError("LOCService::WriteResultForAllToFile::Exception::{0}", ex.Message);
-                throw;
+                throw ex;
             }
         }
 
@@ -323,16 +317,18 @@ namespace netasloc.Core.Services
                 {
                     string projectName = System.IO.Path.GetFileNameWithoutExtension(repository);
                     string projectFullPath = Path.Combine(WorkingDirectoryPath, projectName);
-                    using (PowerShell powershell = PowerShell.Create())
+                    using (PowerShell powerShell = PowerShell.Create())
                     {
                         if (!Directory.Exists(projectFullPath))
-                            powershell.AddScript(@"git clone" + " " + repository + " " + projectFullPath);
+                        {
+                            powerShell.AddScript(@"git clone" + " " + repository + " " + projectFullPath);
+                        }
                         else
                         {
-                            powershell.AddScript($"cd" + " " + projectFullPath);
-                            powershell.AddScript($"git pull");
+                            powerShell.AddScript($"cd" + " " + projectFullPath);
+                            powerShell.AddScript($"git pull");
                         }
-                        Collection<PSObject> results = powershell.Invoke();
+                        Collection<PSObject> results = powerShell.Invoke();
                     }
                     directoryFullPaths.Add(projectFullPath);
                 }
@@ -408,14 +404,11 @@ namespace netasloc.Core.Services
         /// <returns>True if the line is empty</returns>
         private bool IsEmptyLine(string line)
         {
-            //_logger.LogInformation("LOCService::IsEmptyLine::called.");
-            bool result = string.IsNullOrEmpty(line);
-            //_logger.LogInformation("LOCService::IsEmptyLine::finished. result:{0}", result);
-            return result;
+            return string.IsNullOrEmpty(line);
         }
 
         /// <summary>
-        /// Returns Regular Expression pattern to detect block comments for the language that is related to given file extension
+        /// Generates regular expression pattern to detect block comments for the related language
         /// </summary>
         /// <param name="fileExtension">File extension</param>
         /// <returns>Regular Expression pattern for block comments</returns>
@@ -455,44 +448,6 @@ namespace netasloc.Core.Services
             return null;
         }
 
-        private string GetStringRegExPattern(string fileExtension)
-        {
-            //_logger.LogInformation("LOCService::GetStringRegExPattern::called. fileExtension:{0}", fileExtension);
-            try
-            {
-                char stringChar = GetStringCharacter(fileExtension);
-                string[] blockCommentCharacters = GetBlockCommentCharacters(fileExtension);
-                string blockCommentStart = null;
-                string blockCommentEnd = null;
-                string regexPattern = "";
-
-                if (blockCommentCharacters != null && blockCommentCharacters.Length > 1)
-                {
-                    blockCommentStart = blockCommentCharacters[0];
-                    blockCommentEnd = blockCommentCharacters[1];
-
-                    regexPattern += "\\" + stringChar.ToString();
-                    regexPattern += "[^\\n\\r]*?";
-                    foreach (char character in blockCommentStart)
-                        regexPattern += "\\" + character.ToString();
-                    regexPattern += "[\\s\\S]*?";
-                    foreach (char character in blockCommentEnd)
-                        regexPattern += "\\" + character.ToString();
-                    regexPattern += "[^\\n\\r]*?";
-                    regexPattern += "\\" + stringChar.ToString();
-                    //_logger.LogInformation("LOCService::GetBlockCommentRegExPattern::finished. regexPattern:{0}", regexPattern);
-                    return regexPattern;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError("LOCService::GetStringRegExPattern::Exception::{0}", ex.Message);
-                throw;
-            }
-            //_logger.LogInformation("LOCService::GetStringRegExPattern::finished. null");
-            return null;
-        }
-
         /// <summary>
         /// Returns language alias for given file extension
         /// </summary>
@@ -500,24 +455,9 @@ namespace netasloc.Core.Services
         /// <returns>Language alias</returns>
         private string GetAlias(string fileExtension)
         {
-            //_logger.LogInformation("LOCService::GetAlias::called. fileExtension:{0}", fileExtension);
-            try
-            {
-                foreach (var language in Languages)
-                {
-                    if (language.FileExtensions.Contains(fileExtension))
-                    {
-                        //_logger.LogInformation("LOCService::GetAlias::finished. Alias:{0}", language.Alias);
-                        return language.Alias;
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError("LOCService::GetAlias::Exception::{0}", ex.Message);
-                throw;
-            }
-            //_logger.LogInformation("LOCService::GetAlias::finished. null");
+            foreach (var language in Languages)
+                if (language.FileExtensions.Contains(fileExtension))
+                    return language.Alias;
             return null;
         }
 
@@ -528,24 +468,9 @@ namespace netasloc.Core.Services
         /// <returns>Line comment characters for given file extension</returns>
         private string GetLineCommentCharacters(string fileExtension)
         {
-            //_logger.LogInformation("LOCService::GetLineCommentCharacters::called. fileExtension:{0}", fileExtension);
-            try
-            {
-                foreach (var language in Languages)
-                {
-                    if (language.FileExtensions.Contains(fileExtension))
-                    {
-                        //_logger.LogInformation("LOCService::GetLineCommentCharacters::finished. LineCommentCharacters:{0}", language.LineCommentCharacters);
-                        return language.LineCommentCharacters;
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError("LOCService::GetLineCommentCharacters::Exception::{0}", ex.Message);
-                throw;
-            }
-            //_logger.LogInformation("LOCService::GetLineCommentCharacters::finished. null");
+            foreach (var language in Languages)
+                if (language.FileExtensions.Contains(fileExtension))
+                    return language.LineCommentCharacters;
             return null;
         }
 
@@ -553,30 +478,20 @@ namespace netasloc.Core.Services
         /// Returns block comment characters for the language that is related to given file extension
         /// </summary>
         /// <param name="fileExtension">File extension</param>
-        /// <returns>Block comment characters for given file extension</returns>
+        /// <returns>Block comment characters for given file extension, null if they are not exist</returns>
         private string[] GetBlockCommentCharacters(string fileExtension)
         {
-            //_logger.LogInformation("LOCService::GetBlockCommentCharacters::called. fileExtension:{0}", fileExtension);
-            try
-            {
-                foreach (var language in Languages)
-                {
-                    if (language.FileExtensions.Contains(fileExtension))
-                    {
-                        //_logger.LogInformation("LOCService::GetBlockCommentCharacters::finished. BlockCommentCharacters:{0}", language.BlockCommentCharacters);
-                        return language.BlockCommentCharacters;
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError("LOCService::GetBlockCommentCharacters::Exception::{0}", ex.Message);
-                throw;
-            }
-            //_logger.LogInformation("LOCService::GetBlockCommentCharacters::finished. null");
+            foreach (var language in Languages)
+                if (language.FileExtensions.Contains(fileExtension))
+                    return language.BlockCommentCharacters;
             return null;
         }
 
+        /// <summary>
+        /// Returns string character for given file extension
+        /// </summary>
+        /// <param name="fileExtension">File extension</param>
+        /// <returns>String character for related language</returns>
         private char GetStringCharacter(string fileExtension)
         {
             return '\"';

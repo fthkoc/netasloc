@@ -9,6 +9,6 @@ namespace netasloc.Web.Models.ViewModels
         {
             Releases = new List<ReleaseDTO>();
         }
-        public IEnumerable<ReleaseDTO> Releases { get; set; }
+        public IList<ReleaseDTO> Releases { get; set; }
     }
 }

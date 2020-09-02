@@ -24,7 +24,7 @@ namespace netasloc.Web.Models.ViewModels
             Releases = new List<ReleaseDTO>();
         }
 
-        public IEnumerable<ReleaseDTO> Releases { get; set; }
+        public IList<ReleaseDTO> Releases { get; set; }
         public string releaseCodes { get; set; }
         public string totalLines { get; set; }
         public string totalCodeLines { get; set; }
@@ -50,7 +50,7 @@ namespace netasloc.Web.Models.ViewModels
             AnalyzeResults = new List<AnalyzeResultDTO>();
         }
 
-        public IEnumerable<AnalyzeResultDTO> AnalyzeResults { get; set; }
+        public IList<AnalyzeResultDTO> AnalyzeResults { get; set; }
         public string analyzeDates { get; set; }
         public string totalLines { get; set; }
         public string totalCodeLines { get; set; }

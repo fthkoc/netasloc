@@ -1,5 +1,4 @@
-﻿using netasloc.Data.Entity;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace netasloc.Data.DAO
 {

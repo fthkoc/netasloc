@@ -1,13 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.DTO;
-using netasloc.Core.Models;
 using netasloc.Core.Services;
 using netasloc.Web.Models.ViewModels;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace netasloc.Web.Controllers
 {
@@ -63,33 +62,6 @@ namespace netasloc.Web.Controllers
             return View(model);
         }
 
-        public IActionResult AnalyzeLocal()
-        {
-            _logger.LogInformation("AnalyzeController::AnalyzeLocal::called.");
-            try
-            {
-                string resultFilePath = _configuration.GetSection("AnalyzeConfiguration:ResultFilePath").Get<string>();
-                if (string.IsNullOrEmpty(resultFilePath))
-                    resultFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Analyze Results");
-                string[] trackedRepositories = _configuration.GetSection("AnalyzeConfiguration:TrackedRepositories").Get<string[]>();
-
-                LOCForAllResponse result = _locService.AnalyzeLOCForAll(trackedRepositories);
-
-                bool isWritten = _locService.WriteResultToFile(resultFilePath, result);
-                if (!isWritten)
-                    throw new Exception("Error at writing result in '" + resultFilePath + "'!");
-
-                AnalyzeResultDTO analyzeResult = _dataAccess.GetAllAnalyzeResults().ElementAt(0);
-                _logger.LogInformation("AnalyzeController::AnalyzeLocal::finished.");
-                return RedirectToAction("Details", new { id = analyzeResult.ID });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("AnalyzeController::AnalyzeLocal::Exception::{0}", ex.Message);
-                return null;
-            }
-        }
-
         public IActionResult AnalyzeRemote()
         {
             _logger.LogInformation("AnalyzeController::AnalyzeRemote::called.");
@@ -103,6 +75,7 @@ namespace netasloc.Web.Controllers
                 var result = _locService.AnalyzeLOCForAll(directoryFullPaths);
 
                 string resultsFolderFullPath = Path.Combine(workingDirectoryPath, resultsFolderName);
+
                 bool isWritten = _locService.WriteResultToFile(resultsFolderFullPath, result);
                 if (!isWritten)
                     throw new Exception("Error at writing result in '" + resultsFolderFullPath + "'!");

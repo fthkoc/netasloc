@@ -2,7 +2,7 @@
 
 namespace netasloc.Data.Entity
 {
-    // directories table
+    // directories table entry
     public class Directory : _IAuditable
     {
         public uint id { get; set; }

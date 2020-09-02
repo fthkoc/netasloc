@@ -2,7 +2,7 @@
 
 namespace netasloc.Data.Entity
 {
-    // releases Table
+    // releases table entry
     public class Release : _IAuditable
     {
         public uint id { get; set; }

@@ -1,5 +1,4 @@
-﻿using System.IO;
-
+﻿
 namespace netasloc.Web.Models.API
 {
     public class AnalyzeLocalRepositoriesRequest

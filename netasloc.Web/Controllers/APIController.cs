@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.Models;
 using netasloc.Core.Services;
 using netasloc.Web.Models.API;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Management.Automation;
-using System.Text;
-using System.Text.Json;
 
 namespace netasloc.Web.Controllers
 {
@@ -34,9 +28,11 @@ namespace netasloc.Web.Controllers
             LOCForAllResponse result;
             try
             {
-                result = _locService.AnalyzeLOCForAll(request.Repositories);
                 if (string.IsNullOrEmpty(request.ResultsDirectory))
                     request.ResultsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "..", "Analyze Results");
+
+                result = _locService.AnalyzeLOCForAll(request.Repositories);
+
                 bool isWritten = _locService.WriteResultToFile(request.ResultsDirectory, result);
                 if (!isWritten)
                     throw new Exception("Error at writing result in '" + request.ResultsDirectory + "'!");
@@ -57,9 +53,11 @@ namespace netasloc.Web.Controllers
             LOCForAllResponse result;
             try
             {
+                string resultsFolderFullPath = Path.Combine(request.WorkingDirectoryPath, request.ResultsFolderName);
+
                 var directoryFullPaths = _locService.GetRepositoriesFromGit(request.WorkingDirectoryPath, request.RemoteRepositories);
                 result = _locService.AnalyzeLOCForAll(directoryFullPaths);
-                string resultsFolderFullPath = Path.Combine(request.WorkingDirectoryPath, request.ResultsFolderName);
+
                 bool isWritten = _locService.WriteResultToFile(resultsFolderFullPath, result);
                 if (!isWritten)
                     throw new Exception("Error at writing result in '" + resultsFolderFullPath + "'!");

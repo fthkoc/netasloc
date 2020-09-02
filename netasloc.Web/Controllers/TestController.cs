@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using netasloc.Core.Models;
+using netasloc.Core.Services;
+using netasloc.Web.Models.Test;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using netasloc.Core.Models;
-using netasloc.Core.Services;
-using netasloc.Web.Models.Test;
 
 namespace netasloc.Web.Controllers
 {
@@ -87,18 +87,10 @@ namespace netasloc.Web.Controllers
                 LOCForAllResponse netaslocResult = JsonSerializer.Deserialize<LOCForAllResponse>(netaslocRawData);
                 Dictionary<string ,LOCForSingleFileResponse> netaslocFiles = new Dictionary<string, LOCForSingleFileResponse>();
                 foreach (var directory in netaslocResult.AllDirectoriesData)
-                {
                     foreach (var language in directory.Value.AllLanguagesData)
-                    {
                         foreach (var extension in language.Value.AllExtensionsData)
-                        {
                             foreach (var file in extension.Value.AllFilesData)
-                            {
                                 netaslocFiles.Add(Path.Combine(file.FileDirectory, file.FileName).ToLower(), file);
-                            }
-                        }
-                    }
-                }
 
                 Dictionary<string, LOCForSingleFileResponse> counterFiles = new Dictionary<string, LOCForSingleFileResponse>();
                 using (var reader = new StreamReader(request.counterResultFilePath))
@@ -125,7 +117,7 @@ namespace netasloc.Web.Controllers
                                     FileName = Path.Combine(item.FileDirectory, item.FileName),
                                     netaslocTotal = item.TotalLineCount,
                                     counterTotal = (uint) total,
-                                    differenceTotal = (int) item.TotalLineCount - (int) total,
+                                    differenceTotal = (int) item.TotalLineCount - total,
                                     netaslocCode = item.CodeLineCount,
                                     counterCode = (uint) code,
                                     differenceCode = (int) item.CodeLineCount - code,

@@ -2,7 +2,7 @@
 
 namespace netasloc.Data.Entity
 {
-    // analyze_results Table
+    // analyze_results table entry
     public class AnalyzeResult : _IAuditable
     {
         public uint id { get; set; }

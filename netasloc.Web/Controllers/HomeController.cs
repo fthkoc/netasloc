@@ -1,12 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using netasloc.Core.Services;
 using netasloc.Web.Models;
 using netasloc.Web.Models.ViewModels;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.Json;
 
 namespace netasloc.Web.Controllers
 {
@@ -27,7 +27,7 @@ namespace netasloc.Web.Controllers
             var model = new IndexViewModel();
             try
             {
-                model.Releases.Releases = _dataAccess.GetAllReleases().Take(5).Reverse();
+                model.Releases.Releases = _dataAccess.GetAllReleases().Take(5).Reverse().ToList();
                 model.Releases.releaseCodes = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.ReleaseCode));
                 model.Releases.totalLines = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.TotalLineCount));
                 model.Releases.totalCodeLines = JsonSerializer.Serialize(model.Releases.Releases.Select(x => x.CodeLineCount));
@@ -44,7 +44,7 @@ namespace netasloc.Web.Controllers
                 DateTime date = directories.Count() > 0 ? directories.ElementAt(0).CreatedAt : DateTime.MinValue;
                 model.Directories.date = JsonSerializer.Serialize(date.ToString());
 
-                model.AnalyzeResults.AnalyzeResults = _dataAccess.GetAllAnalyzeResults().Take(7).Reverse();
+                model.AnalyzeResults.AnalyzeResults = _dataAccess.GetAllAnalyzeResults().Take(7).Reverse().ToList();
                 model.AnalyzeResults.analyzeDates = JsonSerializer.Serialize(model.AnalyzeResults.AnalyzeResults.Select(x => x.CreatedAt.ToString("yyyy.MM.dd HH:mm")));
                 model.AnalyzeResults.totalLines = JsonSerializer.Serialize(model.AnalyzeResults.AnalyzeResults.Select(x => x.TotalLineCount));
                 model.AnalyzeResults.totalCodeLines = JsonSerializer.Serialize(model.AnalyzeResults.AnalyzeResults.Select(x => x.CodeLineCount));

@@ -10,6 +10,6 @@ namespace netasloc.Web.Models.ViewModels
             AnalyzeResults = new List<AnalyzeResultDTO>();
         }
 
-        public IEnumerable<AnalyzeResultDTO> AnalyzeResults { get; set; }
+        public IList<AnalyzeResultDTO> AnalyzeResults { get; set; }
     }
 }

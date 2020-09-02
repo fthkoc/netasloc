@@ -10,7 +10,7 @@ namespace netasloc.Data
         public MySqlDatabase(string connectionString)
         {
             Connection = new MySqlConnection(connectionString);
-            this.Connection.Open();
+            Connection.Open();
         }
 
         public void Dispose()
